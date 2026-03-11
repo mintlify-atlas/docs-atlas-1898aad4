@@ -1,0 +1,81 @@
+{
+  "projectType": "frontend",
+  "projectName": "Drakk3 Portfolio",
+  "projectDescription": "A minimalist dark-themed portfolio site built with Astro 6, React 19, Tailwind CSS v4, and shadcn/ui",
+  "theme": "willow",
+  "primaryColor": "#ffffff",
+  "lightColor": null,
+  "darkColor": "#0a0a0a",
+  "navigation": {
+    "groups": [
+      {
+        "group": "Get Started",
+        "pages": [
+          "introduction",
+          "quickstart"
+        ]
+      },
+      {
+        "group": "Architecture",
+        "pages": [
+          "architecture/overview",
+          "architecture/astro-react-integration",
+          "architecture/tailwind-v4"
+        ]
+      },
+      {
+        "group": "Components",
+        "pages": [
+          "components/overview",
+          "components/astro-components",
+          "components/react-components",
+          "components/shadcn-ui"
+        ]
+      },
+      {
+        "group": "Styling",
+        "pages": [
+          "styling/theme-system",
+          "styling/color-tokens",
+          "styling/animations"
+        ]
+      },
+      {
+        "group": "Data & Content",
+        "pages": [
+          "data/projects",
+          "data/skills"
+        ]
+      },
+      {
+        "group": "Development",
+        "pages": [
+          "development/setup",
+          "development/commands",
+          "development/best-practices"
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Astro 6 with React 19 islands architecture",
+    "Tailwind CSS v4 with native @theme configuration",
+    "shadcn/ui component library integration",
+    "Dark-only minimalist design system",
+    "Type-safe project and skills data structure",
+    "Responsive single-page portfolio layout"
+  ],
+  "publicApiSurface": [
+    "Layout.astro - Main layout wrapper",
+    "Navbar.astro - Navigation component",
+    "Hero.astro - Hero section",
+    "About.astro - About section",
+    "Skills.astro - Skills showcase",
+    "Projects.astro - Project cards grid",
+    "Contact.tsx - Interactive contact form (React)",
+    "Footer.astro - Footer component",
+    "projects.ts - Project data exports",
+    "skills.ts - Skills and services data exports",
+    "utils.ts - cn() utility for class merging"
+  ]
+}
