@@ -116,7 +116,9 @@ export const badgeVariant: Record<Status, string> = {
 };
 ```
 
-This maps each status to a semantic variant name for consistent styling across the UI.
+<Note>
+This mapping is exported from the data file but is **not currently used** in the Projects component. The status is rendered as plain text in a custom styled span (see `src/components/Projects.astro:70-72`). The mapping could be used if you wanted to integrate the shadcn/ui Badge component in the future.
+</Note>
 
 ## Gradient Guidelines
 

@@ -572,7 +572,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const badgeVariants = cva(
-  'inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors',
+  'inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
   {
     variants: {
       variant: {
@@ -683,13 +683,13 @@ All shadcn/ui components use **Tailwind CSS v4** tokens defined in `src/styles/g
 
 ```css title="src/styles/global.css"
 @theme {
-  --color-primary: 271 76% 61%;        /* Purple */
-  --color-foreground: 0 0% 98%;        /* Near white */
-  --color-background: 0 0% 3.9%;       /* Near black */
-  --color-muted-foreground: 0 0% 63.9%; /* Gray */
-  --color-border: 0 0% 14.9%;          /* Dark gray */
-  --color-input: 0 0% 14.9%;
-  --color-ring: 271 76% 61%;           /* Same as primary */
+  --color-primary: 0 0% 100%;          /* White */
+  --color-foreground: 0 0% 94%;        /* Near white */
+  --color-background: 240 5% 4%;       /* Dark blue-gray */
+  --color-muted-foreground: 240 5% 65%; /* Gray */
+  --color-border: 240 4% 16%;          /* Dark gray */
+  --color-input: 240 4% 16%;
+  --color-ring: 0 0% 100%;             /* Same as primary */
 }
 ```
 
