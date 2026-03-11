@@ -1,0 +1,506 @@
+---
+title: 'Tailwind CSS v4 Configuration'
+description: 'Learn how Tailwind v4 is configured with native Vite plugin, @theme directive, and custom token definitions.'
+---
+
+## Overview
+
+The Drakk3 Portfolio uses **Tailwind CSS v4**, which introduces a new native configuration approach via the `@tailwindcss/vite` plugin. This is a significant departure from the traditional PostCSS-based setup.
+
+<Note>
+  Tailwind v4 is configured directly through CSS using the `@theme` directive instead of a JavaScript config file. This project includes both for shadcn/ui compatibility.
+</Note>
+
+## Tailwind v4 Native Configuration
+
+### Vite Plugin Setup
+
+Tailwind v4 is configured as a Vite plugin in `astro.config.mjs:14`:
+
+```typescript title="astro.config.mjs"
+import { defineConfig } from 'astro/config';
+import react from '@astrojs/react';
+import tailwindcss from '@tailwindcss/vite';
+
+export default defineConfig({
+  integrations: [react()],
+  vite: {
+    plugins: [tailwindcss()],
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './src'),
+      },
+    },
+  },
+});
+```
+
+**Key differences from v3:**
+- ✅ Native Vite plugin (no PostCSS)
+- ✅ Faster build times
+- ✅ Better integration with modern bundlers
+- ✅ Simplified configuration
+
+### The `@theme` Directive
+
+Tailwind v4 introduces the `@theme` directive for defining design tokens directly in CSS. This project uses it in `src/styles/global.css:4`:
+
+```css title="src/styles/global.css"
+@import "tailwindcss";
+
+/* ── Tailwind v4 theme tokens — zinc/white minimalist scheme ── */
+@theme {
+  /* Colors */
+  --color-background:          hsl(240 5% 4%);
+  --color-foreground:          hsl(0 0% 94%);
+  --color-card:                hsl(240 4% 10%);
+  --color-card-foreground:     hsl(0 0% 94%);
+  --color-primary:             hsl(0 0% 100%);
+  --color-primary-foreground:  hsl(0 0% 0%);
+  --color-secondary:           hsl(240 4% 16%);
+  --color-secondary-foreground:hsl(0 0% 94%);
+  --color-muted:               hsl(240 4% 16%);
+  --color-muted-foreground:    hsl(240 5% 65%);
+  --color-accent:              hsl(240 4% 16%);
+  --color-accent-foreground:   hsl(0 0% 94%);
+  --color-destructive:         hsl(0 72% 51%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+  --color-border:              hsl(240 4% 16%);
+  --color-input:               hsl(240 4% 16%);
+  --color-ring:                hsl(0 0% 100%);
+
+  /* Border radius */
+  --radius-sm:  calc(0.5rem - 4px);
+  --radius-md:  calc(0.5rem - 2px);
+  --radius-lg:  0.5rem;
+
+  /* Animations */
+  --animate-marquee: marquee 30s linear infinite;
+  --animate-fade-up: fade-up 0.5s ease both;
+  --animate-spin:    spin 0.7s linear infinite;
+}
+```
+
+## Understanding Theme Tokens
+
+### Color System
+
+The project uses a **dark-only** zinc-based color scheme with semantic naming:
+
+<CardGroup cols={2}>
+  <Card title="Background Colors" icon="palette">
+    - `--color-background`: Main page background (near black)
+    - `--color-card`: Elevated surface color
+    - `--color-secondary`: Subtle background variant
+  </Card>
+  
+  <Card title="Foreground Colors" icon="text">
+    - `--color-foreground`: Primary text color (near white)
+    - `--color-muted-foreground`: Secondary text (muted gray)
+    - `--color-accent-foreground`: Accent text
+  </Card>
+  
+  <Card title="Interactive Colors" icon="cursor-click">
+    - `--color-primary`: Primary action color (white)
+    - `--color-ring`: Focus ring color
+    - `--color-destructive`: Error/danger states
+  </Card>
+  
+  <Card title="UI Elements" icon="layer-group">
+    - `--color-border`: Border color
+    - `--color-input`: Input field backgrounds
+    - `--color-accent`: Accent backgrounds
+  </Card>
+</CardGroup>
+
+### Border Radius Tokens
+
+Consistent border radii using the `calc()` function:
+
+```css title="src/styles/global.css:25"
+--radius-sm:  calc(0.5rem - 4px);  /* 4px */
+--radius-md:  calc(0.5rem - 2px);  /* 6px */
+--radius-lg:  0.5rem;              /* 8px */
+```
+
+**Usage in components:**
+
+```tsx
+<div className="rounded-lg">      {/* Uses --radius-lg */}
+<div className="rounded-md">      {/* Uses --radius-md */}
+<div className="rounded-sm">      {/* Uses --radius-sm */}
+```
+
+### Animation Tokens
+
+Custom animation definitions in `src/styles/global.css:30`:
+
+```css
+--animate-marquee: marquee 30s linear infinite;
+--animate-fade-up: fade-up 0.5s ease both;
+--animate-spin:    spin 0.7s linear infinite;
+```
+
+**Usage example:**
+
+```tsx
+<div className="animate-fade-up">Fades in from bottom</div>
+<div className="animate-marquee">Scrolls horizontally</div>
+```
+
+## Difference from PostCSS-Based Tailwind
+
+### Traditional Tailwind v3 Setup
+
+```javascript title="Old approach (v3)"
+// postcss.config.js
+module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+
+// tailwind.config.js
+module.exports = {
+  content: ['./src/**/*.{astro,html,js,jsx,ts,tsx}'],
+  theme: {
+    extend: {
+      colors: {
+        primary: '#ffffff',
+        // ...
+      },
+    },
+  },
+}
+```
+
+### Tailwind v4 Native Approach
+
+```typescript title="New approach (v4)"
+// astro.config.mjs
+import tailwindcss from '@tailwindcss/vite';
+
+export default defineConfig({
+  vite: {
+    plugins: [tailwindcss()],
+  },
+});
+```
+
+```css title="src/styles/global.css"
+@import "tailwindcss";
+
+@theme {
+  --color-primary: hsl(0 0% 100%);
+  /* Theme tokens defined here */
+}
+```
+
+### Comparison
+
+| Feature | Tailwind v3 (PostCSS) | Tailwind v4 (Native) |
+|---------|----------------------|----------------------|
+| **Configuration** | JavaScript (`tailwind.config.js`) | CSS (`@theme` directive) |
+| **Build tool** | PostCSS plugin | Vite plugin |
+| **Setup complexity** | Multiple config files | Single CSS file |
+| **Build speed** | Slower (PostCSS overhead) | Faster (native Vite) |
+| **HMR** | Good | Excellent |
+| **CSS custom properties** | Optional | First-class |
+
+<Note>
+  Tailwind v4 is **significantly faster** because it bypasses PostCSS and integrates directly with Vite's build pipeline.
+</Note>
+
+## Why `tailwind.config.mjs` Still Exists
+
+This project includes **both** a `@theme` block and a `tailwind.config.mjs` file:
+
+```javascript title="tailwind.config.mjs:2"
+export default {
+  darkMode: 'class',
+  content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
+  theme: {
+    container: {
+      center: true,
+      padding: '1.5rem',
+      screens: { '2xl': '1100px' },
+    },
+    extend: {
+      colors: {
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
+        // ... more shadcn color mappings
+      },
+      borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)',
+      },
+      // ... animations
+    },
+  },
+  plugins: [],
+};
+```
+
+### Why Both Files?
+
+<Warning>
+  **shadcn/ui compatibility**: The `tailwind.config.mjs` file exists solely for shadcn/ui components, which expect a JavaScript config file with specific color and radius definitions.
+</Warning>
+
+**How it works:**
+
+1. **`@theme` directive** (in `global.css`) defines the actual color values:
+   ```css
+   --color-primary: hsl(0 0% 100%);
+   ```
+
+2. **`tailwind.config.mjs`** maps those values to Tailwind utilities:
+   ```javascript
+   colors: {
+     primary: 'hsl(var(--primary))',
+   }
+   ```
+
+3. **shadcn/ui components** reference the Tailwind utilities:
+   ```tsx
+   <Button className="bg-primary text-primary-foreground">
+   ```
+
+### Source of Truth
+
+<Note>
+  The `@theme` directive in `src/styles/global.css` is the **single source of truth** for design tokens. The `tailwind.config.mjs` file simply bridges those tokens to shadcn/ui.
+</Note>
+
+## CSS Custom Properties Approach
+
+### HSL Variable Bridge
+
+The project uses a clever approach to bridge Tailwind v4 tokens with shadcn/ui:
+
+```css title="src/styles/global.css:36"
+/* ── shadcn HSL variable bridge ── */
+:root {
+  --background:           240 5% 4%;
+  --foreground:           0 0% 94%;
+  --card:                 240 4% 10%;
+  --card-foreground:      0 0% 94%;
+  --primary:              0 0% 100%;
+  --primary-foreground:   0 0% 0%;
+  /* ... more variables */
+}
+```
+
+**Why HSL without `hsl()`?**
+
+shadcn/ui components use `hsl(var(--primary))` syntax, so the variables store just the HSL values (`0 0% 100%`) without the `hsl()` function wrapper.
+
+### Token Flow
+
+```mermaid
+graph LR
+    A[@theme in global.css] --> B[CSS Custom Properties]
+    B --> C[Tailwind Utilities]
+    C --> D[React/Astro Components]
+    A --> E[:root Variables]
+    E --> F[shadcn/ui Components]
+```
+
+## How to Add New Theme Tokens
+
+<Steps>
+  <Step title="Add to @theme directive">
+    Define the token in `src/styles/global.css`:
+    
+    ```css
+    @theme {
+      /* Add new color */
+      --color-success: hsl(142 76% 36%);
+      --color-success-foreground: hsl(0 0% 100%);
+    }
+    ```
+  </Step>
+  
+  <Step title="Add to :root bridge (if using shadcn)">
+    Add HSL values for shadcn/ui compatibility:
+    
+    ```css
+    :root {
+      --success: 142 76% 36%;
+      --success-foreground: 0 0% 100%;
+    }
+    ```
+  </Step>
+  
+  <Step title="Add to tailwind.config.mjs">
+    Map the variable to Tailwind utilities:
+    
+    ```javascript
+    theme: {
+      extend: {
+        colors: {
+          success: {
+            DEFAULT: 'hsl(var(--success))',
+            foreground: 'hsl(var(--success-foreground))',
+          },
+        },
+      },
+    }
+    ```
+  </Step>
+  
+  <Step title="Use in components">
+    Reference the new token in your components:
+    
+    ```tsx
+    <div className="bg-success text-success-foreground">
+      Success message!
+    </div>
+    ```
+  </Step>
+</Steps>
+
+## Real Examples from the Project
+
+### Contact Form Card
+
+The Contact component uses theme tokens extensively:
+
+```tsx title="src/components/Contact.tsx:47"
+<div className="rounded-lg border border-border bg-card p-9">
+  {/* Form content */}
+</div>
+```
+
+**Tokens used:**
+- `rounded-lg` → `--radius-lg`
+- `border-border` → `--color-border`
+- `bg-card` → `--color-card`
+
+### Button Component
+
+The shadcn Button uses primary color tokens:
+
+```tsx title="Example from ui/button.tsx"
+<Button className="bg-primary text-primary-foreground">
+  Send Message →
+</Button>
+```
+
+**Token flow:**
+1. `bg-primary` → `hsl(var(--primary))` (from `tailwind.config.mjs`)
+2. `--primary` → `0 0% 100%` (from `:root` in `global.css`)
+3. Final value → `hsl(0 0% 100%)` (white)
+
+### Muted Text
+
+```tsx title="src/components/Contact.tsx:33"
+<p className="text-base text-muted-foreground leading-relaxed">
+  Have a project in mind, a question, or just want to say hi?
+</p>
+```
+
+**Token:** `text-muted-foreground` → `--color-muted-foreground` → `hsl(240 5% 65%)`
+
+## Animation Keyframes
+
+Custom animations are defined alongside theme tokens:
+
+```css title="src/styles/global.css:58"
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+```
+
+**Usage in Contact form loading state (`src/components/Contact.tsx:104`):**
+
+```tsx
+<span
+  className="w-3.5 h-3.5 rounded-full border-2 border-white/30 border-t-white animate-spin"
+  aria-hidden="true"
+/>
+```
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Use Semantic Names" icon="tag">
+    Name tokens by their purpose (`--color-primary`) not their value (`--color-white`).
+  </Card>
+  
+  <Card title="Maintain Consistency" icon="check-double">
+    Keep `@theme`, `:root`, and `tailwind.config.mjs` in sync when adding new tokens.
+  </Card>
+  
+  <Card title="Use HSL Format" icon="palette">
+    HSL provides better color manipulation and opacity control than RGB.
+  </Card>
+  
+  <Card title="Document Custom Tokens" icon="book">
+    Add comments explaining the purpose of custom animation or spacing tokens.
+  </Card>
+</CardGroup>
+
+## Common Issues
+
+### Issue: Tailwind classes not working
+
+**Solution:** Ensure `@import "tailwindcss";` is at the top of `global.css`:
+
+```css title="src/styles/global.css:1"
+@import "tailwindcss";
+
+@theme {
+  /* ... */
+}
+```
+
+### Issue: Custom colors not applying
+
+**Solution:** Check all three locations:
+1. ✅ `@theme` directive has the color
+2. ✅ `:root` has the HSL value (without `hsl()`)
+3. ✅ `tailwind.config.mjs` maps the variable
+
+### Issue: Animation not working
+
+**Solution:** Define both the `@keyframes` and the `--animate-*` token:
+
+```css
+/* Define keyframes */
+@keyframes my-animation {
+  /* ... */
+}
+
+/* Add to @theme */
+@theme {
+  --animate-my-animation: my-animation 1s ease infinite;
+}
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Architecture Overview" href="./overview">
+    Learn about the overall project architecture
+  </Card>
+  <Card title="Astro + React Integration" href="./astro-react-integration">
+    Understand how Astro and React work together
+  </Card>
+</CardGroup>

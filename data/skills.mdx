@@ -1,0 +1,397 @@
+---
+title: Skills Data
+description: Complete guide to the skills and services data structure in the Drakk3 Portfolio
+---
+
+## Overview
+
+The skills data structure powers the **Skills & Services** section of the portfolio. It's defined in `src/data/skills.ts` and consumed by `src/components/Skills.astro`.
+
+This file exports three main arrays:
+- `skills` - Technology badges for the infinite marquee
+- `technicalServices` - Technical service offerings
+- `operationalServices` - Operational and leadership services
+
+## Skills Array
+
+### Structure
+
+The skills array defines technology badges with visual styling:
+
+```typescript
+export const skills = [
+  { name: 'JavaScript', color: '#f7df1e', bg: '#1a1800', letter: 'JS' },
+  { name: 'TypeScript', color: '#3178c6', bg: '#001428', letter: 'TS' },
+  // ...
+];
+```
+
+### Field Reference
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | `string` | Full technology name |
+| `color` | `string` | Hex color for text and border |
+| `bg` | `string` | Hex color for badge background |
+| `letter` | `string` | 1-2 character icon or emoji |
+
+### Current Skills
+
+<CardGroup cols={3}>
+  <Card title="JavaScript" icon="js">
+    Color: `#f7df1e` (yellow)
+    Letter: `JS`
+  </Card>
+  
+  <Card title="TypeScript" icon="code">
+    Color: `#3178c6` (blue)
+    Letter: `TS`
+  </Card>
+  
+  <Card title="React" icon="react">
+    Color: `#61dafb` (cyan)
+    Letter: `⚛`
+  </Card>
+  
+  <Card title="Next.js" icon="arrow-right">
+    Color: `#e0e0e0` (light gray)
+    Letter: `N`
+  </Card>
+  
+  <Card title="Node.js" icon="server">
+    Color: `#68a063` (green)
+    Letter: `⬡`
+  </Card>
+  
+  <Card title="Tailwind" icon="wind">
+    Color: `#06b6d4` (cyan)
+    Letter: `≋`
+  </Card>
+  
+  <Card title="Astro" icon="rocket">
+    Color: `#ff5d01` (orange)
+    Letter: `🚀`
+  </Card>
+  
+  <Card title="Git" icon="git-branch">
+    Color: `#f05032` (red-orange)
+    Letter: `⎇`
+  </Card>
+  
+  <Card title="Linux" icon="terminal">
+    Color: `#fcc624` (yellow)
+    Letter: `🐧`
+  </Card>
+</CardGroup>
+
+## Complete Skills Data
+
+```typescript
+export const skills = [
+  { name: 'JavaScript', color: '#f7df1e', bg: '#1a1800', letter: 'JS' },
+  { name: 'TypeScript', color: '#3178c6', bg: '#001428', letter: 'TS' },
+  { name: 'React',      color: '#61dafb', bg: '#001219', letter: '⚛'  },
+  { name: 'Next.js',    color: '#e0e0e0', bg: '#151515', letter: 'N'  },
+  { name: 'Node.js',    color: '#68a063', bg: '#0b1a0b', letter: '⬡'  },
+  { name: 'Tailwind',   color: '#06b6d4', bg: '#001417', letter: '≋'  },
+  { name: 'Astro',      color: '#ff5d01', bg: '#1a0800', letter: '🚀' },
+  { name: 'Git',        color: '#f05032', bg: '#1a0800', letter: '⎇'  },
+  { name: 'Linux',      color: '#fcc624', bg: '#1a1400', letter: '🐧' },
+];
+```
+
+## Color Guidelines
+
+<Steps>
+  <Step title="Use brand colors">
+    Match official brand colors for each technology (e.g., TypeScript blue, React cyan)
+  </Step>
+  
+  <Step title="Dark backgrounds">
+    Background colors should be very dark (`#1a...` range) to work with the dark theme
+  </Step>
+  
+  <Step title="Sufficient contrast">
+    Ensure the `color` value has good contrast against the `bg` value
+  </Step>
+  
+  <Step title="Border transparency">
+    The component applies `${skill.color}22` (8-bit alpha) for subtle borders
+  </Step>
+</Steps>
+
+## Technical Services
+
+### Structure
+
+```typescript
+export const technicalServices = [
+  {
+    title: 'Web Development',
+    items: ['React / Next.js SPAs', 'REST & GraphQL APIs', 'Performance optimization'],
+  },
+  // ...
+];
+```
+
+### Complete Data
+
+```typescript
+export const technicalServices = [
+  {
+    title: 'Web Development',
+    items: ['React / Next.js SPAs', 'REST & GraphQL APIs', 'Performance optimization'],
+  },
+  {
+    title: 'Mobile Development',
+    items: ['React Native cross-platform', 'iOS & Android deployment', 'Offline-first architecture'],
+  },
+  {
+    title: 'UI/UX Design',
+    items: ['Responsive design systems', 'Figma prototyping', 'Accessibility (WCAG 2.1)'],
+  },
+];
+```
+
+<CardGroup cols={3}>
+  <Card title="Web Development" icon="globe">
+    React/Next.js SPAs, REST & GraphQL APIs, Performance optimization
+  </Card>
+  
+  <Card title="Mobile Development" icon="mobile">
+    React Native cross-platform, iOS & Android deployment, Offline-first architecture
+  </Card>
+  
+  <Card title="UI/UX Design" icon="palette">
+    Responsive design systems, Figma prototyping, Accessibility (WCAG 2.1)
+  </Card>
+</CardGroup>
+
+## Operational Services
+
+### Structure
+
+```typescript
+export const operationalServices = [
+  {
+    title: 'Operations Management',
+    items: ['Distribution center processes', 'Documentation and training', 'Operational KPIs & reporting'],
+  },
+  // ...
+];
+```
+
+### Complete Data
+
+```typescript
+export const operationalServices = [
+  {
+    title: 'Operations Management',
+    items: ['Distribution center processes', 'Documentation and training', 'Operational KPIs & reporting'],
+  },
+  {
+    title: 'Project Management',
+    items: ['Sprint planning', 'Team coordination', 'Stakeholder communication'],
+  },
+  {
+    title: 'Systems Thinking',
+    items: ['Process mapping', 'Data-driven decision making', 'Cross-functional leadership'],
+  },
+];
+```
+
+<CardGroup cols={3}>
+  <Card title="Operations Management" icon="building">
+    Distribution center processes, Documentation and training, Operational KPIs & reporting
+  </Card>
+  
+  <Card title="Project Management" icon="users">
+    Sprint planning, Team coordination, Stakeholder communication
+  </Card>
+  
+  <Card title="Systems Thinking" icon="brain">
+    Process mapping, Data-driven decision making, Cross-functional leadership
+  </Card>
+</CardGroup>
+
+## Adding New Skills
+
+<Steps>
+  <Step title="Find the brand color">
+    Look up the official brand color for the technology (usually in their brand guidelines)
+  </Step>
+  
+  <Step title="Calculate dark background">
+    Create a very dark version by reducing RGB values dramatically
+  </Step>
+  
+  <Step title="Choose a letter/symbol">
+    Use initials, emoji, or Unicode symbols that represent the technology
+  </Step>
+  
+  <Step title="Add to the array">
+    ```typescript
+    { name: 'PostgreSQL', color: '#336791', bg: '#001219', letter: '🐘' }
+    ```
+  </Step>
+</Steps>
+
+<Warning>
+  Skills appear twice in the marquee animation (duplicated array). Keep the array length reasonable (8-12 items) for smooth animation.
+</Warning>
+
+## Adding New Services
+
+### For Technical Services
+
+```typescript
+{
+  title: 'Your Service Category',
+  items: [
+    'Specific skill or deliverable',
+    'Another capability',
+    'Third offering'
+  ],
+}
+```
+
+### For Operational Services
+
+```typescript
+{
+  title: 'Leadership Category',
+  items: [
+    'Operational capability',
+    'Management skill',
+    'Strategic competency'
+  ],
+}
+```
+
+<Note>
+  Each service category should have exactly 3 items for visual consistency.
+</Note>
+
+## Usage in Components
+
+The skills data is consumed in `src/components/Skills.astro`:
+
+### Infinite Marquee
+
+```astro
+<div class="flex w-max gap-4 animate-marquee">
+  {[...skills, ...skills].map((skill) => (
+    <div class="flex items-center gap-2.5 bg-card border rounded-full py-2 pl-2 pr-5">
+      <span
+        class="w-8 h-8 rounded-full border flex items-center justify-center"
+        style={`color:${skill.color};background:${skill.bg};border-color:${skill.color}22`}
+      >
+        {skill.letter}
+      </span>
+      <span class="text-sm font-medium">{skill.name}</span>
+    </div>
+  ))}
+</div>
+```
+
+<CardGroup cols={2}>
+  <Card title="Array Duplication" icon="copy">
+    Skills array is duplicated with `[...skills, ...skills]` to create seamless infinite scroll
+  </Card>
+  
+  <Card title="Inline Styling" icon="code">
+    Colors are applied via `style` attribute for dynamic theming per skill
+  </Card>
+</CardGroup>
+
+### Service Cards
+
+```astro
+{technicalServices.map((service) => (
+  <div class="rounded-lg border bg-card p-6">
+    <h3 class="font-bold mb-4">{service.title}</h3>
+    <ul class="space-y-3">
+      {service.items.map((item) => (
+        <li class="flex items-center gap-2.5">
+          <span>▸</span>
+          {item}
+        </li>
+      ))}
+    </ul>
+  </div>
+))}
+```
+
+The same pattern is used for `operationalServices` in the second column.
+
+## Styling Details
+
+### Marquee Animation
+
+The infinite scroll is achieved with Tailwind's `animate-marquee` custom animation:
+
+```css
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+```
+
+The animation translates by `-50%` because the skills array is duplicated.
+
+### Hover States
+
+<CardGroup cols={2}>
+  <Card title="Skill Badges" icon="pointer">
+    Translate up slightly on hover, pause the marquee animation
+  </Card>
+  
+  <Card title="Service Cards" icon="cursor">
+    Translate up, brighten border, show top gradient line
+  </Card>
+</CardGroup>
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Skill Count" icon="hash">
+    Keep skills array between 8-12 items for optimal marquee performance
+  </Card>
+  
+  <Card title="Service Balance" icon="scale">
+    Maintain equal number of technical and operational service categories
+  </Card>
+  
+  <Card title="Item Consistency" icon="list">
+    Each service should have exactly 3 items for visual harmony
+  </Card>
+  
+  <Card title="Letter Variety" icon="sparkles">
+    Mix text initials with Unicode symbols and emoji for visual interest
+  </Card>
+</CardGroup>
+
+## Color Reference
+
+Here are the exact colors used for each skill badge:
+
+| Technology | Color | Background | Symbol |
+|------------|-------|------------|---------|
+| JavaScript | `#f7df1e` | `#1a1800` | JS |
+| TypeScript | `#3178c6` | `#001428` | TS |
+| React | `#61dafb` | `#001219` | ⚛ |
+| Next.js | `#e0e0e0` | `#151515` | N |
+| Node.js | `#68a063` | `#0b1a0b` | ⬡ |
+| Tailwind | `#06b6d4` | `#001417` | ≋ |
+| Astro | `#ff5d01` | `#1a0800` | 🚀 |
+| Git | `#f05032` | `#1a0800` | ⎇ |
+| Linux | `#fcc624` | `#1a1400` | 🐧 |
+
+## Extending the Data
+
+When adding new entries:
+
+1. **Skills**: Add to the end of the array for smooth marquee integration
+2. **Services**: Add new categories between existing ones or at the end
+3. **Testing**: Always preview in the browser to ensure colors work in dark mode
+4. **Consistency**: Follow the existing patterns for structure and naming

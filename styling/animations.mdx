@@ -1,0 +1,395 @@
+---
+title: Animations
+description: Animation system with keyframes and Tailwind v4 utilities
+---
+
+Drakk3 Portfolio includes a custom animation system with keyframe definitions and Tailwind v4 animation utilities. All animations are defined in `src/styles/global.css`.
+
+## Animation System Overview
+
+The animation system provides:
+
+- **3 keyframe animations**: `marquee`, `fade-up`, `spin`
+- **Tailwind v4 utilities** via `@theme` directive
+- **Extended config** in `tailwind.config.mjs` for shadcn compatibility
+
+<Note>
+  Animation utilities are defined in both `@theme` (Tailwind v4) and `tailwind.config.mjs` (shadcn compatibility). See [Theme System](/styling/theme-system) for details on this architecture.
+</Note>
+
+## Keyframe Definitions
+
+All keyframes are defined at the bottom of `src/styles/global.css`:
+
+### Marquee Animation
+
+Infinite horizontal scrolling effect for skill badges and logos.
+
+```css title="src/styles/global.css"
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+```
+
+**Properties**:
+- Translates element from 0% to -50% horizontally
+- Designed for duplicated content (displays 2 copies, scrolls 1 full width)
+- Seamless infinite loop when content is repeated
+
+### Fade-Up Animation
+
+Subtle entrance animation with opacity and vertical translation.
+
+```css title="src/styles/global.css"
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+```
+
+**Properties**:
+- Starts invisible (`opacity: 0`) and 20px below final position
+- Animates to full opacity and natural position
+- Used for staggered entrances on page load
+
+### Spin Animation
+
+Continuous 360° rotation for loading indicators.
+
+```css title="src/styles/global.css"
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+```
+
+**Properties**:
+- Simple full rotation
+- Typically used with `infinite` iteration
+- Standard loading/spinner animation
+
+## Tailwind v4 Animation Utilities
+
+Animation utilities are defined in the `@theme` directive:
+
+```css title="src/styles/global.css"
+@theme {
+  /* Animations */
+  --animate-marquee: marquee 30s linear infinite;
+  --animate-fade-up: fade-up 0.5s ease both;
+  --animate-spin:    spin 0.7s linear infinite;
+}
+```
+
+These create Tailwind utilities:
+
+<CardGroup cols={3}>
+  <Card title="animate-marquee" icon="arrow-right">
+    **Duration**: 30s  
+    **Timing**: linear  
+    **Iteration**: infinite  
+    
+    For infinite scrolling content
+  </Card>
+  
+  <Card title="animate-fade-up" icon="arrow-up">
+    **Duration**: 0.5s  
+    **Timing**: ease  
+    **Fill**: both  
+    
+    For entrance animations
+  </Card>
+  
+  <Card title="animate-spin" icon="rotate">
+    **Duration**: 0.7s  
+    **Timing**: linear  
+    **Iteration**: infinite  
+    
+    For loading spinners
+  </Card>
+</CardGroup>
+
+## Usage Examples
+
+### Marquee in Skills Section
+
+Infinite scrolling skill badges from `src/components/Skills.astro`:
+
+```astro title="src/components/Skills.astro" {5}
+<div
+  class="overflow-hidden mb-18"
+  style="mask-image:linear-gradient(to right,transparent,black 10%,black 90%,transparent);"
+>
+  <div class="flex w-max gap-4 animate-marquee hover:[animation-play-state:paused] py-2">
+    {[...skills, ...skills].map((skill) => (
+      <div class="flex items-center gap-2.5 bg-card border border-zinc-800 rounded-full py-2 pl-2 pr-5">
+        <span class="w-8 h-8 rounded-full border flex items-center justify-center">
+          {skill.letter}
+        </span>
+        <span class="text-[13px] font-medium text-muted-foreground">{skill.name}</span>
+      </div>
+    ))}
+  </div>
+</div>
+```
+
+**Key features**:
+- `animate-marquee` creates infinite scroll
+- `hover:[animation-play-state:paused]` pauses on hover
+- `[...skills, ...skills]` duplicates content for seamless loop
+- `mask-image` creates fade-out edges
+
+<Note>
+  The marquee requires duplicated content (`[...skills, ...skills]`) to create a seamless infinite loop. The animation translates -50%, so the second copy appears as the first exits.
+</Note>
+
+### Fade-Up in Hero Section
+
+Staggered entrance animations from `src/components/Hero.astro`:
+
+```astro title="src/components/Hero.astro" {2,5,8,11,14}
+<div>
+  <p class="text-base text-muted-foreground mb-4 animate-[fade-up_0.6s_ease_both]">
+    Hi, I'm <span class="text-foreground font-semibold">Juan Valencia</span>
+  </p>
+
+  <h1 class="text-[clamp(52px,8vw,80px)] font-extrabold leading-[1.05] tracking-[-2px] text-foreground mb-6 animate-[fade-up_0.6s_0.1s_ease_both]">
+    Tech<br />& Systems Engineer
+  </h1>
+
+  <p class="text-[17px] text-muted-foreground leading-[1.75] max-w-105 mb-10 animate-[fade-up_0.6s_0.2s_ease_both]">
+    I write code and I run operations — two separate crafts, one way of thinking.
+  </p>
+
+  <div class="flex flex-wrap gap-4 animate-[fade-up_0.6s_0.3s_ease_both]">
+    <!-- Buttons -->
+  </div>
+</div>
+```
+
+**Staggered delays**:
+- First element: `0s` delay (no delay)
+- Second element: `0.1s` delay
+- Third element: `0.2s` delay
+- Fourth element: `0.3s` delay
+
+This creates a cascading entrance effect where elements appear one after another.
+
+### Custom Animation Syntax
+
+The hero uses arbitrary value syntax for custom timings:
+
+```tsx
+// Standard utility
+<div className="animate-fade-up" />
+// Uses: fade-up 0.5s ease both
+
+// Custom timing with arbitrary value
+<div className="animate-[fade-up_0.6s_0.1s_ease_both]" />
+// Uses: fade-up 0.6s 0.1s ease both (custom duration + delay)
+```
+
+## Extended Configuration
+
+The `tailwind.config.mjs` extends keyframes and animations for shadcn compatibility:
+
+```js title="tailwind.config.mjs"
+theme: {
+  extend: {
+    keyframes: {
+      marquee: {
+        '0%': { transform: 'translateX(0)' },
+        '100%': { transform: 'translateX(-50%)' },
+      },
+      'fade-up': {
+        '0%': { opacity: '0', transform: 'translateY(20px)' },
+        '100%': { opacity: '1', transform: 'translateY(0)' },
+      },
+      spin: {
+        to: { transform: 'rotate(360deg)' },
+      },
+    },
+    animation: {
+      marquee: 'marquee 30s linear infinite',
+      'fade-up': 'fade-up 0.5s ease both',
+      spin: 'spin 0.7s linear infinite',
+    },
+  },
+},
+```
+
+<Warning>
+  The `@theme` directive in `global.css` is the source of truth. The `tailwind.config.mjs` values must match to ensure consistency across Tailwind v4 and shadcn components.
+</Warning>
+
+## Adding Custom Animations
+
+To add a new animation:
+
+<Steps>
+  <Step title="Define the keyframe">
+    Add a new `@keyframes` rule in `src/styles/global.css`:
+    
+    ```css
+    @keyframes slide-in {
+      from { transform: translateX(-100%); }
+      to   { transform: translateX(0); }
+    }
+    ```
+  </Step>
+  
+  <Step title="Add to @theme">
+    Create a utility in the `@theme` directive:
+    
+    ```css
+    @theme {
+      --animate-slide-in: slide-in 0.4s ease-out;
+    }
+    ```
+  </Step>
+  
+  <Step title="Extend tailwind.config.mjs">
+    Add to both `keyframes` and `animation` sections:
+    
+    ```js
+    theme: {
+      extend: {
+        keyframes: {
+          'slide-in': {
+            from: { transform: 'translateX(-100%)' },
+            to: { transform: 'translateX(0)' },
+          },
+        },
+        animation: {
+          'slide-in': 'slide-in 0.4s ease-out',
+        },
+      },
+    },
+    ```
+  </Step>
+  
+  <Step title="Use in components">
+    Apply the new utility:
+    
+    ```tsx
+    <div className="animate-slide-in" />
+    ```
+  </Step>
+</Steps>
+
+## Animation Modifiers
+
+Tailwind provides utility classes to modify animations:
+
+### Animation Play State
+
+Control whether animations are running or paused:
+
+```tsx
+// Pause on hover
+<div className="animate-marquee hover:[animation-play-state:paused]" />
+
+// Always paused
+<div className="animate-spin [animation-play-state:paused]" />
+```
+
+Used in the Skills marquee to pause scrolling on hover.
+
+### Animation Delay
+
+Use arbitrary values for custom delays:
+
+```tsx
+// Standard utility (no delay)
+<div className="animate-fade-up" />
+
+// With 200ms delay
+<div className="animate-[fade-up_0.5s_0.2s_ease_both]" />
+
+// With 500ms delay
+<div className="animate-[fade-up_0.5s_0.5s_ease_both]" />
+```
+
+### Animation Duration
+
+Customize animation duration:
+
+```tsx
+// Default duration (0.5s)
+<div className="animate-fade-up" />
+
+// Custom duration (1s)
+<div className="animate-[fade-up_1s_ease_both]" />
+
+// With delay (1s duration, 0.3s delay)
+<div className="animate-[fade-up_1s_0.3s_ease_both]" />
+```
+
+## Animation Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Use semantic utilities" icon="check">
+    Prefer `animate-fade-up` over arbitrary keyframe values
+  </Card>
+  <Card title="Stagger entrances" icon="layer-group">
+    Use delays (0.1s, 0.2s, 0.3s) for cascading effects
+  </Card>
+  <Card title="Keep durations short" icon="clock">
+    0.3s-0.6s feels snappy; >1s feels sluggish
+  </Card>
+  <Card title="Use ease timing" icon="wave-sine">
+    `ease` or `ease-out` feels more natural than `linear`
+  </Card>
+  <Card title="Provide pausing" icon="pause">
+    Use `hover:[animation-play-state:paused]` for accessibility
+  </Card>
+  <Card title="Test on slow devices" icon="mobile">
+    Ensure animations don't cause jank on lower-end hardware
+  </Card>
+</CardGroup>
+
+## Accessibility Considerations
+
+Respect user preferences for reduced motion:
+
+```css title="src/styles/global.css"
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+```
+
+<Note>
+  Consider adding this media query to respect users who prefer reduced motion. This is important for accessibility and reducing motion sickness.
+</Note>
+
+## Performance Tips
+
+<CardGroup cols={2}>
+  <Card title="Use transform & opacity" icon="gauge-high">
+    These properties are GPU-accelerated and performant
+  </Card>
+  <Card title="Avoid animating layout" icon="triangle-exclamation">
+    Don't animate `width`, `height`, `margin`, `padding` - use `transform` instead
+  </Card>
+  <Card title="Use will-change sparingly" icon="bolt">
+    Only add `will-change: transform` if you notice jank
+  </Card>
+  <Card title="Test with DevTools" icon="magnifying-glass">
+    Use Chrome DevTools Performance tab to profile animations
+  </Card>
+</CardGroup>
+
+## Related Resources
+
+<CardGroup cols={2}>
+  <Card title="Theme System" href="/styling/theme-system" icon="paintbrush">
+    Learn about the @theme directive and configuration
+  </Card>
+  <Card title="Color Tokens" href="/styling/color-tokens" icon="palette">
+    Complete color token reference
+  </Card>
+</CardGroup>

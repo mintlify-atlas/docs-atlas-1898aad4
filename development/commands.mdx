@@ -1,0 +1,277 @@
+---
+title: Available Commands
+description: NPM scripts and commands for development, building, and previewing the portfolio site
+---
+
+The project includes several npm scripts defined in `package.json` for common development tasks.
+
+## Development Commands
+
+### `npm run dev`
+
+Starts the Astro development server with hot module replacement.
+
+```bash
+npm run dev
+```
+
+**What it does:**
+- Launches dev server at `http://localhost:4321`
+- Watches for file changes in `src/`
+- Automatically rebuilds and reloads the browser
+- Enables Astro dev toolbar for debugging
+- Serves unoptimized builds for faster iteration
+
+**When to use:**
+- Active development and coding
+- Testing changes in real-time
+- Debugging with browser DevTools
+
+**Example output:**
+```bash
+$ npm run dev
+
+> astro dev
+
+  🚀  astro  v6.0.2 started in 247ms
+
+  ┃ Local    http://localhost:4321/
+  ┃ Network  use --host to expose
+```
+
+<Note>
+  The dev server supports custom ports with `npm run dev -- --port 3000`. The `--` passes arguments to the underlying Astro CLI.
+</Note>
+
+---
+
+## Production Commands
+
+### `npm run build`
+
+Creates an optimized production build of the site.
+
+```bash
+npm run build
+```
+
+**What it does:**
+- Compiles all `.astro` files to HTML
+- Bundles and minifies JavaScript/CSS
+- Optimizes images and assets
+- Generates static files in the `dist/` directory
+- Runs type checking (TypeScript)
+- Tree-shakes unused code
+
+**When to use:**
+- Before deploying to production
+- Testing production performance locally
+- Verifying build succeeds without errors
+- Checking final bundle sizes
+
+**Example output:**
+```bash
+$ npm run build
+
+> astro build
+
+19:37:42 [types] Generated in 187ms
+19:37:42 [build] output: "static"
+19:37:42 [build] directory: /home/user/project/dist/
+19:37:42 [build] Collecting build info...
+19:37:42 [build] ✓ Completed in 1.23s.
+
+ @astrojs/react - 5 page(s) built in 1.15s
+ ✓ Built in 1.28s
+```
+
+**Build output location:**
+- All production files are written to `dist/`
+- The `dist/` directory contains the complete static site ready for deployment
+
+<Warning>
+  Always run `npm run build` before deploying to catch any build-time errors. The dev server may not catch all issues that occur during production builds.
+</Warning>
+
+---
+
+### `npm run preview`
+
+Serves the production build locally for testing.
+
+```bash
+npm run preview
+```
+
+**What it does:**
+- Serves the `dist/` directory (must run `build` first)
+- Starts a local server at `http://localhost:4321`
+- Simulates production environment
+- Does **not** watch for changes or rebuild
+
+**When to use:**
+- Testing production build before deployment
+- Verifying optimizations worked correctly
+- Checking that all assets load properly
+- Performance testing with production bundles
+
+**Example workflow:**
+```bash
+# 1. Build the production site
+npm run build
+
+# 2. Preview it locally
+npm run preview
+
+# 3. Open http://localhost:4321 to test
+```
+
+**Example output:**
+```bash
+$ npm run preview
+
+> astro preview
+
+  🚀  astro  v6.0.2 started in 82ms
+
+  ┃ Local    http://localhost:4321/
+  ┃ Network  use --host to expose
+```
+
+<Note>
+  If you make changes to source files, you must run `npm run build` again before those changes appear in preview mode.
+</Note>
+
+---
+
+## Astro CLI
+
+### `npm run astro`
+
+Provides direct access to the Astro CLI for advanced commands.
+
+```bash
+npm run astro -- <command> [options]
+```
+
+**What it does:**
+- Runs any Astro CLI command
+- Useful for advanced configuration and troubleshooting
+
+**Common examples:**
+
+```bash
+# Check Astro version
+npm run astro -- --version
+
+# Add a new integration
+npm run astro -- add sitemap
+
+# Get help on available commands
+npm run astro -- --help
+
+# Check for Astro updates
+npm run astro -- check
+
+# Run dev server with custom host
+npm run astro -- dev --host
+```
+
+---
+
+## Command Comparison
+
+<CardGroup cols={3}>
+  <Card title="dev" icon="code">
+    **Development**
+    
+    - Hot reload
+    - Fast builds
+    - Debug tools
+    - Unoptimized
+  </Card>
+  <Card title="build" icon="hammer">
+    **Production Build**
+    
+    - Optimized output
+    - Minified assets
+    - Type checking
+    - Creates `dist/`
+  </Card>
+  <Card title="preview" icon="eye">
+    **Preview Build**
+    
+    - Serves `dist/`
+    - Production mode
+    - No file watching
+    - Must build first
+  </Card>
+</CardGroup>
+
+## Typical Workflows
+
+### Daily Development
+```bash
+# Start dev server and code
+npm run dev
+
+# (Make changes, test in browser)
+# Ctrl+C to stop when done
+```
+
+### Pre-Deployment Testing
+```bash
+# Build production version
+npm run build
+
+# Preview locally to verify
+npm run preview
+
+# If everything looks good, deploy dist/ folder
+```
+
+### Troubleshooting
+```bash
+# Clear cache and reinstall dependencies
+rm -rf node_modules package-lock.json
+npm install
+
+# Clean build artifacts
+rm -rf dist .astro
+
+# Rebuild from scratch
+npm run build
+```
+
+## No Test Suite
+
+<Note>
+  This project does not currently have automated tests configured. Manual testing via `npm run dev` and `npm run preview` is the primary quality assurance method.
+</Note>
+
+If you need to add testing in the future, consider:
+- **Vitest** for unit tests
+- **Playwright** or **Cypress** for E2E tests
+- **Lighthouse CI** for performance testing
+
+## Command Flags
+
+Many Astro commands accept additional flags:
+
+```bash
+# Use a different port
+npm run dev -- --port 3000
+
+# Open browser automatically
+npm run dev -- --open
+
+# Expose to network (useful for mobile testing)
+npm run dev -- --host
+
+# Production build with verbose output
+npm run build -- --verbose
+```
+
+<Warning>
+  Always use `--` before flags when running through npm scripts. This ensures flags are passed to Astro, not npm itself.
+</Warning>

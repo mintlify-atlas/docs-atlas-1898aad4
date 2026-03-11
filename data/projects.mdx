@@ -1,0 +1,271 @@
+---
+title: Projects Data
+description: Complete guide to the projects data structure, types, and usage in the Drakk3 Portfolio
+---
+
+## Overview
+
+The projects data structure powers the **Projects** section of the portfolio, showcasing both technical and operational work. It's defined in `src/data/projects.ts` and consumed by `src/components/Projects.astro`.
+
+## Type Definitions
+
+### Status Type
+
+Defines the current state of a project:
+
+```typescript
+export type Status = 'Deployed' | 'In Development' | 'Completed';
+```
+
+<CardGroup cols={3}>
+  <Card title="Deployed" icon="rocket">
+    Live and accessible to users
+  </Card>
+  <Card title="In Development" icon="code">
+    Currently being built
+  </Card>
+  <Card title="Completed" icon="check">
+    Finished operational projects
+  </Card>
+</CardGroup>
+
+### Category Type
+
+Classifies projects into two main domains:
+
+```typescript
+export type Category = 'Tech' | 'Operations';
+```
+
+- **Tech**: Software development projects (web apps, APIs, etc.)
+- **Operations**: Process improvement and organizational projects
+
+### Project Structure
+
+```typescript
+export const projects: {
+  name: string;
+  description: string;
+  status: Status;
+  category: Category;
+  tags: string[];
+  gradient: string;
+  url: string;
+}[] = [
+  // ... project entries
+];
+```
+
+## Project Fields
+
+<Note>
+  All fields are required for each project entry.
+</Note>
+
+### Field Reference
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | `string` | Project title (display name) |
+| `description` | `string` | Detailed project description |
+| `status` | `Status` | Current project state |
+| `category` | `Category` | Tech or Operations classification |
+| `tags` | `string[]` | Technology/skill tags |
+| `gradient` | `string` | CSS gradient for card header |
+| `url` | `string` | External link (usually GitHub) |
+
+## Real Examples
+
+### Tech Project Example
+
+```typescript
+{
+  name: 'API Explorer',
+  description: 'Web app for consuming and testing third-party REST APIs — built to practice real-world HTTP request handling, authentication flows, and dynamic data rendering.',
+  status: 'Deployed',
+  category: 'Tech',
+  tags: ['JavaScript', 'REST API', 'Fetch'],
+  gradient: 'linear-gradient(135deg,#0f0028 0%,#1a0035 50%,#000 100%)',
+  url: 'https://github.com/drakk3',
+}
+```
+
+### Operations Project Example
+
+```typescript
+{
+  name: 'SOP Optimization & Confluence Implementation',
+  description: 'Reviewed and restructured Standard Operating Procedures across operations and corporate levels. Migrated and organized all documentation into Confluence, creating a centralized, searchable knowledge base aligned with company structure.',
+  status: 'Completed',
+  category: 'Operations',
+  tags: ['SOP', 'Confluence', 'Process Optimization', 'Documentation'],
+  gradient: 'linear-gradient(135deg,#001a14 0%,#000d0a 50%,#000 100%)',
+  url: 'https://github.com/drakk3',
+}
+```
+
+## Badge Variant Mapping
+
+The `badgeVariant` object maps status types to visual variants:
+
+```typescript
+export const badgeVariant: Record<Status, string> = {
+  'Deployed':        'deployed',
+  'In Development':  'warning',
+  'Completed':       'completed',
+};
+```
+
+This maps each status to a semantic variant name for consistent styling across the UI.
+
+## Gradient Guidelines
+
+<Steps>
+  <Step title="Use dark gradients">
+    All gradients should end in `#000` (pure black) to blend with the dark theme
+  </Step>
+  
+  <Step title="Match the category theme">
+    - **Tech projects**: Purple/blue tones (`#0f0028`, `#001a28`, `#001428`)
+    - **Operations projects**: Warm tones (`#1a1200`, `#001a14`)
+  </Step>
+  
+  <Step title="135deg angle">
+    Use `linear-gradient(135deg, ...)` for consistent diagonal direction
+  </Step>
+</Steps>
+
+### Gradient Pattern
+
+```css
+linear-gradient(135deg, [start-color] 0%, [mid-color] 50%, #000 100%)
+```
+
+## Adding New Projects
+
+<Steps>
+  <Step title="Open the data file">
+    Edit `src/data/projects.ts`
+  </Step>
+  
+  <Step title="Add your project object">
+    ```typescript
+    {
+      name: 'Your Project Name',
+      description: 'Detailed description of what this project does and why it matters.',
+      status: 'In Development', // or 'Deployed' or 'Completed'
+      category: 'Tech', // or 'Operations'
+      tags: ['React', 'TypeScript', 'API'],
+      gradient: 'linear-gradient(135deg,#1a0035 0%,#0d001a 50%,#000 100%)',
+      url: 'https://github.com/username/repo',
+    }
+    ```
+  </Step>
+  
+  <Step title="Follow the patterns">
+    - Use meaningful, descriptive tags
+    - Keep descriptions concise but informative
+    - Choose a gradient that fits the category
+  </Step>
+</Steps>
+
+<Warning>
+  Projects are displayed in the order they appear in the array. Place your most important projects first.
+</Warning>
+
+## Usage in Components
+
+The projects data is imported and consumed in `src/components/Projects.astro`:
+
+```astro
+---
+import { projects } from '@/data/projects';
+---
+
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6" id="projects-grid">
+  {projects.map((project) => (
+    <a
+      href={project.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      data-category={project.category}
+      class="project-card"
+    >
+      <!-- Card renders project.name, project.description, etc. -->
+    </a>
+  ))}
+</div>
+```
+
+### Key Integration Points
+
+<CardGroup cols={2}>
+  <Card title="Filtering" icon="filter">
+    The `data-category` attribute enables the filter buttons (All/Tech/Operations)
+  </Card>
+  
+  <Card title="Gradient Styling" icon="palette">
+    `project.gradient` is applied as inline style to the card header
+  </Card>
+  
+  <Card title="Status Display" icon="tag">
+    Status is shown as a badge in the top-right of each card
+  </Card>
+  
+  <Card title="Tags Rendering" icon="hashtag">
+    Tags array is mapped to small pill elements at the bottom
+  </Card>
+</CardGroup>
+
+## Client-Side Filtering
+
+The Projects component includes interactive filtering:
+
+```javascript
+const filterBtns = document.querySelectorAll('.filter-btn');
+const cards = document.querySelectorAll('.project-card');
+
+filterBtns.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const filter = btn.dataset.filter;
+    cards.forEach((card) => {
+      const match = filter === 'All' || card.dataset.category === filter;
+      card.style.display = match ? '' : 'none';
+    });
+  });
+});
+```
+
+This script:
+1. Listens for filter button clicks
+2. Compares `data-category` on each card to the selected filter
+3. Shows/hides cards with fade animations
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Description Length" icon="text">
+    Keep descriptions between 100-200 characters for visual consistency
+  </Card>
+  
+  <Card title="Tag Count" icon="list">
+    Use 3-5 tags per project - enough to be descriptive, not overwhelming
+  </Card>
+  
+  <Card title="URL Consistency" icon="link">
+    Use full URLs including protocol (`https://`)
+  </Card>
+  
+  <Card title="Gradient Testing" icon="eye">
+    Preview gradients in the browser to ensure they work with the dark theme
+  </Card>
+</CardGroup>
+
+## Current Projects
+
+The portfolio currently includes **5 projects**:
+
+- **2 Tech projects**: API Explorer, drakk3 Assistant
+- **3 Operations projects**: Luxury Dept. Structuring, SOP Optimization, National Training Program
+
+Projects span from deployed web applications to completed organizational transformations.

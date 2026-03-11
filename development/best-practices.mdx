@@ -1,0 +1,658 @@
+---
+title: Development Best Practices
+description: Coding conventions, architectural patterns, and development guidelines for the Drakk3 Portfolio project
+---
+
+Follow these best practices to maintain code quality, consistency, and performance across the project.
+
+## Component Architecture
+
+### When to Use Astro vs React Components
+
+The portfolio follows a clear component split strategy:
+
+<CardGroup cols={2}>
+  <Card title="Use Astro (.astro)" icon="rocket">
+    **For static, non-interactive content**
+    
+    - Navigation bars
+    - Hero sections
+    - Content displays
+    - Footers
+    - Static layouts
+  </Card>
+  <Card title="Use React (.tsx)" icon="react">
+    **For interactive features**
+    
+    - Forms with validation
+    - Dynamic state management
+    - Event handlers
+    - Client-side interactions
+  </Card>
+</CardGroup>
+
+**Example from the codebase:**
+
+```astro
+<!-- src/pages/index.astro -->
+---
+import Navbar from '@/components/Navbar.astro'
+import Hero from '@/components/Hero.astro'
+import Skills from '@/components/Skills.astro'
+import Projects from '@/components/Projects.astro'
+import Contact from '@/components/Contact.tsx'  // React for form interactivity
+import Footer from '@/components/Footer.astro'
+---
+
+<Navbar />
+<Hero />
+<Skills />
+<Projects />
+<Contact client:load />  <!-- Only React component needs client:load -->
+<Footer />
+```
+
+<Note>
+  The `Contact` component is React because it handles form state, validation, and submission. All other sections are static Astro components.
+</Note>
+
+**React component mounting directive:**
+
+When using React components in Astro, always specify a client directive:
+
+```astro
+<!-- Load immediately on page load (used for Contact form) -->
+<Contact client:load />
+
+<!-- Load when component becomes visible -->
+<InteractiveWidget client:visible />
+
+<!-- Load when browser is idle -->
+<OptionalFeature client:idle />
+```
+
+<Warning>
+  **Minimize client-side JavaScript.** Only use React components when absolutely necessary for interactivity. Static Astro components result in zero JavaScript sent to the browser.
+</Warning>
+
+---
+
+## Component Organization
+
+### Directory Structure
+
+Organize components by type and purpose:
+
+```
+src/components/
+├── ui/                    # shadcn/ui primitives (React)
+│   ├── button.tsx
+│   ├── card.tsx
+│   ├── input.tsx
+│   ├── label.tsx
+│   ├── textarea.tsx
+│   └── badge.tsx
+├── Navbar.astro          # Top-level sections (Astro)
+├── Hero.astro
+├── Skills.astro
+├── Projects.astro
+├── About.astro
+├── Footer.astro
+└── Contact.tsx           # Interactive features (React)
+```
+
+**Guidelines:**
+- **`ui/` directory** - Reusable shadcn/ui primitives only
+- **Root level** - Page sections and major components
+- **Keep it flat** - Avoid deep nesting unless necessary for clarity
+
+### Naming Conventions
+
+- **Astro components:** PascalCase with `.astro` extension (e.g., `Hero.astro`)
+- **React components:** PascalCase with `.tsx` extension (e.g., `Contact.tsx`)
+- **Utilities:** camelCase with `.ts` extension (e.g., `utils.ts`)
+- **Data files:** camelCase with `.ts` extension (e.g., `projects.ts`, `skills.ts`)
+
+---
+
+## Styling Conventions
+
+### Using Tailwind CSS v4
+
+This project uses **Tailwind CSS v4** via the Vite plugin, not PostCSS.
+
+**Theme customization location:**
+
+```css
+/* src/styles/global.css */
+
+@theme {
+  /* Define custom colors, spacing, animations */
+  --color-background: hsl(240 5% 4%);
+  --color-foreground: hsl(0 0% 94%);
+  /* ... more tokens */
+}
+```
+
+<Note>
+  The `tailwind.config.mjs` file exists for shadcn/ui compatibility, but **`global.css` with `@theme` is the source of truth** for Tailwind v4 configuration.
+</Note>
+
+### The `cn()` Utility
+
+Always use the `cn()` helper from `@/lib/utils` when composing class names in React components:
+
+```typescript
+// src/lib/utils.ts
+import { type ClassValue, clsx } from 'clsx'
+import { twMerge } from 'tailwind-merge'
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+```
+
+**Why use `cn()`?**
+- Merges Tailwind classes intelligently (prevents conflicts)
+- Handles conditional classes cleanly
+- Required pattern for shadcn/ui components
+
+**Examples:**
+
+```tsx
+import { cn } from '@/lib/utils'
+
+// Conditional styling
+<button
+  className={cn(
+    'px-4 py-2 rounded-lg',
+    isActive && 'bg-primary text-white',
+    isDisabled && 'opacity-50 cursor-not-allowed'
+  )}
+>
+  Click me
+</button>
+
+// Merging with prop classes
+function Card({ className, ...props }: { className?: string }) {
+  return (
+    <div
+      className={cn('rounded-lg border bg-card p-6', className)}
+      {...props}
+    />
+  )
+}
+```
+
+### Dark-Only Design
+
+The portfolio uses a **dark-only theme** with no light mode toggle.
+
+**Color palette:**
+- Background: `hsl(240 5% 4%)` - Near black
+- Foreground: `hsl(0 0% 94%)` - Off-white
+- Accent: Purple tones for highlights
+
+<Warning>
+  Do not add light mode styles or theme toggles. The design is intentionally dark-only for brand consistency.
+</Warning>
+
+---
+
+## Data Management
+
+### Adding Projects
+
+All project data lives in `src/data/projects.ts`:
+
+```typescript
+// src/data/projects.ts
+export type Status = 'Deployed' | 'In Development' | 'Completed'
+export type Category = 'Tech' | 'Operations'
+
+export const projects: {
+  name: string
+  description: string
+  status: Status
+  category: Category
+  tags: string[]
+  gradient: string
+  url: string
+}[] = [
+  {
+    name: 'API Explorer',
+    description: 'Web app for consuming and testing third-party REST APIs...',
+    status: 'Deployed',
+    category: 'Tech',
+    tags: ['JavaScript', 'REST API', 'Fetch'],
+    gradient: 'linear-gradient(135deg,#0f0028 0%,#1a0035 50%,#000 100%)',
+    url: 'https://github.com/drakk3',
+  },
+  // ... more projects
+]
+
+export const badgeVariant: Record<Status, string> = {
+  'Deployed':        'deployed',
+  'In Development':  'warning',
+  'Completed':       'completed',
+}
+```
+
+**To add a new project:**
+
+1. Open `src/data/projects.ts`
+2. Add a new object to the `projects` array
+3. Ensure all fields are filled:
+   - `name` - Project title
+   - `description` - Brief explanation of the project
+   - `status` - One of: `'Deployed'`, `'In Development'`, or `'Completed'`
+   - `category` - Either `'Tech'` or `'Operations'`
+   - `tags` - Array of technology/skill tags
+   - `gradient` - CSS gradient for card background
+   - `url` - Link to project or repository
+4. The `Projects.astro` component will automatically render the new project
+
+### Adding Skills
+
+Skills and services are defined in `src/data/skills.ts`:
+
+```typescript
+// src/data/skills.ts
+export const skills = [
+  { name: 'JavaScript', color: '#f7df1e', bg: '#1a1800', letter: 'JS' },
+  { name: 'TypeScript', color: '#3178c6', bg: '#001428', letter: 'TS' },
+  { name: 'React',      color: '#61dafb', bg: '#001219', letter: '⚛'  },
+  // ... more skills
+]
+
+export const technicalServices = [
+  {
+    title: 'Web Development',
+    items: ['React / Next.js SPAs', 'REST & GraphQL APIs', 'Performance optimization'],
+  },
+  // ... more services
+]
+
+export const operationalServices = [
+  {
+    title: 'Operations Management',
+    items: ['Distribution center processes', 'Documentation and training', 'Operational KPIs & reporting'],
+  },
+  // ... more services
+]
+```
+
+**To add a skill:**
+
+1. Add to the `skills` array with color, background, and icon/letter
+2. Changes automatically appear in the Skills section
+
+**To add a service:**
+
+1. Add to `technicalServices` or `operationalServices`
+2. Include a `title` and array of `items`
+
+---
+
+## Adding New Pages
+
+This is a **single-page portfolio site**. All content is on `src/pages/index.astro`.
+
+### Adding a New Section
+
+To add a new section to the homepage:
+
+<Steps>
+  <Step title="Create Component">
+    Create a new Astro component:
+    
+    ```astro
+    <!-- src/components/NewSection.astro -->
+    ---
+    // Component logic here
+    ---
+    
+    <section id="new-section" class="py-20 px-4">
+      <h2 class="text-4xl font-bold mb-8">New Section</h2>
+      <!-- Content -->
+    </section>
+    ```
+  </Step>
+  
+  <Step title="Import and Use">
+    Add to `src/pages/index.astro`:
+    
+    ```astro
+    ---
+    import NewSection from '@/components/NewSection.astro'
+    // ... other imports
+    ---
+    
+    <Navbar />
+    <Hero />
+    <Skills />
+    <NewSection />  <!-- Add here -->
+    <Projects />
+    <Contact client:load />
+    <Footer />
+    ```
+  </Step>
+  
+  <Step title="Update Navigation (Optional)">
+    If the section should be in the nav bar, update `Navbar.astro`:
+    
+    ```astro
+    <a href="#new-section">New Section</a>
+    ```
+  </Step>
+</Steps>
+
+<Warning>
+  Do not create new `.astro` files in `src/pages/` unless you intend to add actual new routes. This is a single-page site.
+</Warning>
+
+---
+
+## Performance Tips
+
+### Minimize Client-Side JavaScript
+
+Astro's philosophy: **ship less JavaScript to the browser.**
+
+✅ **Do:**
+- Use Astro components for static content
+- Only add React for true interactivity
+- Use `client:visible` or `client:idle` when possible
+
+❌ **Don't:**
+- Convert Astro components to React unnecessarily
+- Use React for content that doesn't need state or events
+- Load heavy libraries unless required
+
+### Image Optimization
+
+Use Astro's built-in `<Image>` component for automatic optimization:
+
+```astro
+---
+import { Image } from 'astro:assets'
+import myImage from '@/assets/image.png'
+---
+
+<Image src={myImage} alt="Description" width={800} height={600} />
+```
+
+Benefits:
+- Automatic format conversion (WebP, AVIF)
+- Lazy loading by default
+- Responsive srcset generation
+
+### Build Output Analysis
+
+After running `npm run build`, check bundle sizes:
+
+```bash
+npm run build
+
+# Look for output like:
+# dist/index.html        4.2 kB
+# dist/_astro/index.*.js  12.3 kB
+```
+
+If bundle sizes are growing unexpectedly, investigate:
+- Are you importing large libraries?
+- Can any React components be converted to Astro?
+- Are images optimized?
+
+---
+
+## Theme Customization Workflow
+
+To customize the design theme:
+
+<Steps>
+  <Step title="Modify Theme Tokens">
+    Edit `src/styles/global.css`:
+    
+    ```css
+    @theme {
+      /* Change colors */
+      --color-primary: hsl(200 100% 50%);  /* New accent color */
+      
+      /* Adjust spacing */
+      --spacing-section: 5rem;
+      
+      /* Add animations */
+      --animate-slide-in: slide-in 0.3s ease-out;
+    }
+    ```
+  </Step>
+  
+  <Step title="Update shadcn Variables (If Needed)">
+    If changing core colors, also update the `:root` section:
+    
+    ```css
+    :root {
+      --primary: 200 100% 50%;  /* Match @theme value */
+      /* ... other vars */
+    }
+    ```
+  </Step>
+  
+  <Step title="Test in Dev Mode">
+    ```bash
+    npm run dev
+    ```
+    
+    Verify changes look correct across all sections.
+  </Step>
+  
+  <Step title="Build and Preview">
+    ```bash
+    npm run build
+    npm run preview
+    ```
+    
+    Ensure production build applies changes correctly.
+  </Step>
+</Steps>
+
+<Note>
+  Tailwind v4's `@theme` directive is scoped and optimized at build time. Changes require a dev server restart in some cases.
+</Note>
+
+---
+
+## Path Alias Usage
+
+Always use the `@` alias for imports from `src/`:
+
+```typescript
+// ✅ Good
+import { skills } from '@/data/skills'
+import { cn } from '@/lib/utils'
+import Hero from '@/components/Hero.astro'
+
+// ❌ Avoid
+import { skills } from '../../../data/skills'
+import { cn } from '../../lib/utils'
+import Hero from '../components/Hero.astro'
+```
+
+Benefits:
+- Cleaner imports
+- Easier refactoring
+- Consistent across the codebase
+
+---
+
+## Git Workflow
+
+### Before Committing
+
+1. **Test locally:**
+   ```bash
+   npm run dev
+   # Verify changes work
+   ```
+
+2. **Build successfully:**
+   ```bash
+   npm run build
+   # Ensure no build errors
+   ```
+
+3. **Preview production:**
+   ```bash
+   npm run preview
+   # Check production output
+   ```
+
+### Commit Message Guidelines
+
+- Use clear, descriptive messages
+- Start with a verb (Add, Fix, Update, Remove)
+- Reference what changed, not how
+
+**Examples:**
+```bash
+git commit -m "Add new project to projects.ts"
+git commit -m "Fix contact form validation"
+git commit -m "Update Skills section layout"
+git commit -m "Remove unused dependencies"
+```
+
+---
+
+## Common Patterns
+
+### Conditional Rendering in Astro
+
+```astro
+---
+const showSection = true
+const items = ['Item 1', 'Item 2', 'Item 3']
+---
+
+{showSection && (
+  <section>
+    <h2>Conditional Section</h2>
+  </section>
+)}
+
+<ul>
+  {items.map(item => (
+    <li>{item}</li>
+  ))}
+</ul>
+```
+
+### Mapping Over Data
+
+```astro
+---
+import { projects } from '@/data/projects'
+---
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  {projects.map(project => (
+    <div class="project-card">
+      <h3>{project.name}</h3>
+      <p>{project.description}</p>
+      <div class="tags">
+        {project.tags.map(tag => (
+          <span class="tag">{tag}</span>
+        ))}
+      </div>
+    </div>
+  ))}
+</div>
+```
+
+### Using shadcn/ui Components
+
+```tsx
+import { Button } from '@/components/ui/button'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+
+export function MyComponent() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Project Title</CardTitle>
+        <Badge variant="default">Deployed</Badge>
+      </CardHeader>
+      <CardContent>
+        <p>Project description</p>
+        <Button>View Project</Button>
+      </CardContent>
+    </Card>
+  )
+}
+```
+
+---
+
+## Troubleshooting
+
+### Dev Server Not Starting
+
+1. Check if port 4321 is in use:
+   ```bash
+   lsof -i :4321
+   ```
+
+2. Use a different port:
+   ```bash
+   npm run dev -- --port 3000
+   ```
+
+3. Clear cache:
+   ```bash
+   rm -rf .astro node_modules/.vite
+   ```
+
+### Build Failures
+
+1. Delete `dist/` and `.astro/`:
+   ```bash
+   rm -rf dist .astro
+   ```
+
+2. Reinstall dependencies:
+   ```bash
+   rm -rf node_modules package-lock.json
+   npm install
+   ```
+
+3. Check for TypeScript errors:
+   ```bash
+   npm run build
+   # Read error messages carefully
+   ```
+
+### Styles Not Updating
+
+1. Restart dev server (Tailwind v4 theme changes may require restart)
+2. Clear browser cache (Ctrl+Shift+R or Cmd+Shift+R)
+3. Check `global.css` syntax in `@theme` block
+
+---
+
+## Summary
+
+<CardGroup cols={2}>
+  <Card title="Component Strategy" icon="puzzle">
+    Use Astro for static content, React only for interactivity
+  </Card>
+  <Card title="Styling" icon="palette">
+    Customize theme in `global.css` `@theme` block, use `cn()` utility for React
+  </Card>
+  <Card title="Data Management" icon="database">
+    Add projects to `projects.ts`, skills to `skills.ts`
+  </Card>
+  <Card title="Performance" icon="bolt">
+    Minimize client-side JS, use Astro components by default
+  </Card>
+</CardGroup>

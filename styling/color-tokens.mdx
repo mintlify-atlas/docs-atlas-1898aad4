@@ -1,0 +1,408 @@
+---
+title: Color Tokens
+description: Complete reference of all color tokens and their HSL values
+---
+
+This page documents all color tokens used in the Drakk3 Portfolio theme system. Each token is defined in both `@theme` (Tailwind v4) and `:root` (shadcn) layers.
+
+<Note>
+  See [Theme System](/styling/theme-system) for details on the dual-layer architecture and how these tokens integrate with Tailwind v4 and shadcn/ui.
+</Note>
+
+## Color Token Reference
+
+All colors are defined in `src/styles/global.css` with a **dark-only** zinc/white minimalist scheme.
+
+### Background Colors
+
+Primary surface and container colors.
+
+<CardGroup cols={2}>
+  <Card title="background" icon="square">
+    **@theme**: `hsl(240 5% 4%)`  
+    **:root**: `240 5% 4%`  
+    
+    Near-black background, primary surface color for the entire site.
+    
+    ```tsx
+    <div className="bg-background" />
+    ```
+  </Card>
+  
+  <Card title="card" icon="rectangle-wide">
+    **@theme**: `hsl(240 4% 10%)`  
+    **:root**: `240 4% 10%`  
+    
+    Elevated surface color for cards and contained sections.
+    
+    ```tsx
+    <Card className="bg-card" />
+    ```
+  </Card>
+</CardGroup>
+
+### Text Colors
+
+Foreground and text hierarchy colors.
+
+<CardGroup cols={2}>
+  <Card title="foreground" icon="text">
+    **@theme**: `hsl(0 0% 94%)`  
+    **:root**: `0 0% 94%`  
+    
+    Primary text color, off-white for readability on dark backgrounds.
+    
+    ```tsx
+    <p className="text-foreground" />
+    ```
+  </Card>
+  
+  <Card title="muted-foreground" icon="text-slash">
+    **@theme**: `hsl(240 5% 65%)`  
+    **:root**: `240 5% 65%`  
+    
+    Secondary/muted text color for less prominent content.
+    
+    ```tsx
+    <p className="text-muted-foreground" />
+    ```
+  </Card>
+</CardGroup>
+
+### Semantic Colors
+
+Brand and functional color tokens.
+
+#### Primary
+
+<CardGroup cols={2}>
+  <Card title="primary" icon="star">
+    **@theme**: `hsl(0 0% 100%)`  
+    **:root**: `0 0% 100%`  
+    
+    Pure white, used for primary actions and emphasis.
+    
+    ```tsx
+    <Button className="bg-primary text-primary-foreground">
+      Primary Action
+    </Button>
+    ```
+  </Card>
+  
+  <Card title="primary-foreground" icon="star">
+    **@theme**: `hsl(0 0% 0%)`  
+    **:root**: `0 0% 0%`  
+    
+    Black text for primary buttons (high contrast on white).
+  </Card>
+</CardGroup>
+
+#### Secondary
+
+<CardGroup cols={2}>
+  <Card title="secondary" icon="circle">
+    **@theme**: `hsl(240 4% 16%)`  
+    **:root**: `240 4% 16%`  
+    
+    Subtle zinc gray for secondary UI elements.
+    
+    ```tsx
+    <Button variant="secondary">
+      Secondary Action
+    </Button>
+    ```
+  </Card>
+  
+  <Card title="secondary-foreground" icon="circle">
+    **@theme**: `hsl(0 0% 94%)`  
+    **:root**: `0 0% 94%`  
+    
+    Off-white text for secondary elements.
+  </Card>
+</CardGroup>
+
+#### Muted
+
+<CardGroup cols={2}>
+  <Card title="muted" icon="volume-xmark">
+    **@theme**: `hsl(240 4% 16%)`  
+    **:root**: `240 4% 16%`  
+    
+    Background for muted/disabled elements (matches secondary).
+    
+    ```tsx
+    <div className="bg-muted text-muted-foreground" />
+    ```
+  </Card>
+  
+  <Card title="muted-foreground" icon="volume-xmark">
+    **@theme**: `hsl(240 5% 65%)`  
+    **:root**: `240 5% 65%`  
+    
+    Gray text for muted content.
+  </Card>
+</CardGroup>
+
+#### Accent
+
+<CardGroup cols={2}>
+  <Card title="accent" icon="sparkles">
+    **@theme**: `hsl(240 4% 16%)`  
+    **:root**: `240 4% 16%`  
+    
+    Accent background (matches secondary for minimal design).
+    
+    ```tsx
+    <Button variant="ghost" className="hover:bg-accent" />
+    ```
+  </Card>
+  
+  <Card title="accent-foreground" icon="sparkles">
+    **@theme**: `hsl(0 0% 94%)`  
+    **:root**: `0 0% 94%`  
+    
+    Text color for accent elements.
+  </Card>
+</CardGroup>
+
+#### Destructive
+
+<CardGroup cols={2}>
+  <Card title="destructive" icon="triangle-exclamation">
+    **@theme**: `hsl(0 72% 51%)`  
+    **:root**: `0 72% 51%`  
+    
+    Red for destructive actions and errors.
+    
+    ```tsx
+    <Button variant="destructive">
+      Delete
+    </Button>
+    ```
+  </Card>
+  
+  <Card title="destructive-foreground" icon="triangle-exclamation">
+    **@theme**: `hsl(0 0% 100%)`  
+    **:root**: `0 0% 100%`  
+    
+    White text on destructive backgrounds.
+  </Card>
+</CardGroup>
+
+### Border & Input Colors
+
+Colors for borders, inputs, and focus rings.
+
+<CardGroup cols={3}>
+  <Card title="border" icon="border-all">
+    **@theme**: `hsl(240 4% 16%)`  
+    **:root**: `240 4% 16%`  
+    
+    Subtle zinc border for cards and dividers.
+    
+    ```tsx
+    <div className="border border-border" />
+    ```
+  </Card>
+  
+  <Card title="input" icon="input-text">
+    **@theme**: `hsl(240 4% 16%)`  
+    **:root**: `240 4% 16%`  
+    
+    Background for input fields.
+    
+    ```tsx
+    <Input className="bg-input" />
+    ```
+  </Card>
+  
+  <Card title="ring" icon="circle-dot">
+    **@theme**: `hsl(0 0% 100%)`  
+    **:root**: `0 0% 100%`  
+    
+    White focus ring for accessibility.
+    
+    ```tsx
+    <Button className="focus-visible:ring-2 focus-visible:ring-ring" />
+    ```
+  </Card>
+</CardGroup>
+
+## Complete Token Table
+
+All tokens with both `@theme` and `:root` values:
+
+| Token | @theme Value | :root Value | Usage |
+|-------|-------------|-------------|-------|
+| `background` | `hsl(240 5% 4%)` | `240 5% 4%` | Main background |
+| `foreground` | `hsl(0 0% 94%)` | `0 0% 94%` | Primary text |
+| `card` | `hsl(240 4% 10%)` | `240 4% 10%` | Card backgrounds |
+| `card-foreground` | `hsl(0 0% 94%)` | `0 0% 94%` | Text on cards |
+| `primary` | `hsl(0 0% 100%)` | `0 0% 100%` | Primary actions |
+| `primary-foreground` | `hsl(0 0% 0%)` | `0 0% 0%` | Text on primary |
+| `secondary` | `hsl(240 4% 16%)` | `240 4% 16%` | Secondary UI |
+| `secondary-foreground` | `hsl(0 0% 94%)` | `0 0% 94%` | Text on secondary |
+| `muted` | `hsl(240 4% 16%)` | `240 4% 16%` | Muted backgrounds |
+| `muted-foreground` | `hsl(240 5% 65%)` | `240 5% 65%` | Muted text |
+| `accent` | `hsl(240 4% 16%)` | `240 4% 16%` | Accent backgrounds |
+| `accent-foreground` | `hsl(0 0% 94%)` | `0 0% 94%` | Text on accent |
+| `destructive` | `hsl(0 72% 51%)` | `0 72% 51%` | Error/delete actions |
+| `destructive-foreground` | `hsl(0 0% 100%)` | `0 0% 100%` | Text on destructive |
+| `border` | `hsl(240 4% 16%)` | `240 4% 16%` | Borders |
+| `input` | `hsl(240 4% 16%)` | `240 4% 16%` | Input backgrounds |
+| `ring` | `hsl(0 0% 100%)` | `0 0% 100%` | Focus rings |
+
+## Usage Examples from Components
+
+### Button Component
+
+From `src/components/ui/button.tsx`:
+
+```tsx title="src/components/ui/button.tsx" {3,5,7}
+const buttonVariants = cva(
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-semibold transition-all disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+  {
+    variants: {
+      variant: {
+        default:
+          'bg-primary text-primary-foreground hover:bg-primary/90',
+        outline:
+          'border border-border bg-transparent text-foreground hover:border-primary hover:text-primary',
+        ghost:
+          'bg-transparent text-muted-foreground hover:bg-accent hover:text-accent-foreground',
+        link: 'text-primary underline-offset-4 hover:underline',
+      },
+    },
+  }
+);
+```
+
+**Token usage**:
+- `bg-primary` + `text-primary-foreground` for default button
+- `border-border` + `text-foreground` for outline variant
+- `text-muted-foreground` + `hover:bg-accent` for ghost variant
+- `ring-ring` for focus states
+
+### Card Component
+
+From `src/components/ui/card.tsx`:
+
+```tsx title="src/components/ui/card.tsx" {4}
+const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn(
+        'rounded-lg border border-border bg-card text-card-foreground',
+        className
+      )}
+      {...props}
+    />
+  )
+);
+```
+
+**Token usage**:
+- `border-border` for subtle card outline
+- `bg-card` for elevated surface
+- `text-card-foreground` for card content
+
+### Badge Component
+
+From `src/components/ui/badge.tsx`:
+
+```tsx title="src/components/ui/badge.tsx" {5-8}
+const badgeVariants = cva(
+  'inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold',
+  {
+    variants: {
+      variant: {
+        default: 'border-transparent bg-primary text-primary-foreground',
+        secondary: 'border-transparent bg-secondary text-secondary-foreground',
+        destructive: 'border-transparent bg-destructive text-destructive-foreground',
+        outline: 'border-border text-foreground',
+      },
+    },
+  }
+);
+```
+
+**Token usage**:
+- All semantic color pairs: `primary`, `secondary`, `destructive`
+- Each with matching `-foreground` for proper contrast
+
+### Hero Section
+
+From `src/components/Hero.astro`:
+
+```astro title="src/components/Hero.astro" {4,8,11}
+<section id="hero" class="relative min-h-svh flex items-center overflow-hidden pt-16">
+  <div class="container relative z-10 max-w-275 mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+    <div>
+      <p class="text-base text-muted-foreground mb-4">
+        Hi, I'm <span class="text-foreground font-semibold">Juan Valencia</span>
+      </p>
+
+      <h1 class="text-[clamp(52px,8vw,80px)] font-extrabold leading-[1.05] tracking-[-2px] text-foreground mb-6">
+        Tech<br />& Systems Engineer
+      </h1>
+
+      <p class="text-[17px] text-muted-foreground leading-[1.75] max-w-105 mb-10">
+        I write code and I run operations...
+      </p>
+    </div>
+  </div>
+</section>
+```
+
+**Token usage**:
+- `text-muted-foreground` for secondary text
+- `text-foreground` for headings and emphasized spans
+- Proper text hierarchy with semantic colors
+
+## Opacity Modifiers
+
+Tailwind v4 supports opacity modifiers on all color tokens:
+
+```tsx
+// Background with opacity
+<div className="bg-primary/10" />      // 10% opacity
+<div className="bg-foreground/20" />  // 20% opacity
+
+// Text with opacity
+<p className="text-foreground/60" />  // 60% opacity
+
+// Border with opacity
+<div className="border-primary/30" /> // 30% opacity
+```
+
+Example from `src/components/Hero.astro`:
+
+```astro
+<div class="absolute -top-1/5 -right-1/10 w-150 h-150 rounded-full bg-primary/[0.07] blur-[80px]"></div>
+```
+
+## Custom Color Usage
+
+For one-off colors not in the token system, use arbitrary values:
+
+```tsx
+// Custom colors (avoid when possible)
+<div className="bg-[hsl(271_76%_61%)]" />  // purple
+<div className="text-[#e2e8f0]" />          // hex color
+```
+
+<Warning>
+  Use semantic tokens instead of arbitrary colors whenever possible. This ensures consistency and makes theme updates easier.
+</Warning>
+
+## Related Resources
+
+<CardGroup cols={2}>
+  <Card title="Theme System" href="/styling/theme-system" icon="paintbrush">
+    Learn about the dual-layer theme architecture
+  </Card>
+  <Card title="Animations" href="/styling/animations" icon="circle-play">
+    Animation system and keyframe definitions
+  </Card>
+</CardGroup>

@@ -1,0 +1,549 @@
+---
+title: Astro Components
+description: Static, server-rendered components for the Drakk3 Portfolio
+---
+
+All Astro components (`.astro` files) are **static** and **server-rendered**. They ship zero JavaScript to the browser by default, making them perfect for content-focused sections.
+
+## Component List
+
+The portfolio includes 7 Astro components:
+
+<CardGroup cols={2}>
+  <Card title="Navbar" icon="bars" href="#navbar">
+    Fixed header with scroll effects and mobile menu
+  </Card>
+  <Card title="Hero" icon="rocket" href="#hero">
+    Landing section with animated text and code decoration
+  </Card>
+  <Card title="About" icon="user" href="#about">
+    Personal introduction with Bateson quote
+  </Card>
+  <Card title="Skills" icon="code" href="#skills">
+    Infinite marquee + two-column services grid
+  </Card>
+  <Card title="Projects" icon="folder" href="#projects">
+    Filterable project cards with category tabs
+  </Card>
+  <Card title="Footer" icon="copyright" href="#footer">
+    Site credits and tech stack links
+  </Card>
+  <Card title="Welcome" icon="circle-info" href="#welcome">
+    Default Astro starter template (not used in production)
+  </Card>
+</CardGroup>
+
+---
+
+## Navbar
+
+**Location:** `src/components/Navbar.astro`
+
+Fixed navigation header with glassmorphism scroll effect and animated hamburger menu for mobile.
+
+### Features
+
+- Fixed position with `z-50`
+- Scroll-triggered glassmorphism (`backdrop-blur-md`)
+- Desktop: horizontal nav links with animated underlines
+- Mobile: slide-in drawer menu with hamburger animation
+
+### Code Structure
+
+```astro title="src/components/Navbar.astro" showLineNumbers
+---
+// No props - completely static
+---
+
+<header id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+  <nav class="container flex items-center justify-between h-16 max-w-[1100px] mx-auto px-6">
+    <a href="#hero" class="text-lg font-bold tracking-tight">
+      drakk3<span class="text-zinc-500">.</span>
+    </a>
+
+    <ul class="hidden sm:flex items-center gap-8 list-none">
+      <li><a href="#hero" class="nav-link">Home<span class="nav-underline"></span></a></li>
+      <li><a href="#projects" class="nav-link">Projects<span class="nav-underline"></span></a></li>
+      <li><a href="#contact" class="nav-link">Contact<span class="nav-underline"></span></a></li>
+    </ul>
+
+    <button id="hamburger" class="sm:hidden flex flex-col gap-[5px]">
+      <span class="ham-bar block w-[22px] h-[2px] bg-foreground"></span>
+      <span class="ham-bar block w-[22px] h-[2px] bg-foreground"></span>
+      <span class="ham-bar block w-[22px] h-[2px] bg-foreground"></span>
+    </button>
+  </nav>
+
+  <div id="mobile-menu" class="sm:hidden fixed inset-y-0 right-0 w-60 bg-card border-l">
+    <a href="#hero" class="mobile-link">Home</a>
+    <a href="#projects" class="mobile-link">Projects</a>
+    <a href="#contact" class="mobile-link">Contact</a>
+  </div>
+</header>
+
+<style>
+  .nav-underline {
+    @apply absolute -bottom-1 left-0 w-0 h-px bg-foreground/40 transition-[width] duration-300;
+  }
+  .nav-link:hover .nav-underline {
+    @apply w-full;
+  }
+</style>
+
+<script>
+  const navbar = document.getElementById('navbar')!;
+  const hamburger = document.getElementById('hamburger')!;
+  const menu = document.getElementById('mobile-menu')!;
+
+  // Scroll effect
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 20) {
+      navbar.classList.add('bg-background/85', 'backdrop-blur-md', 'border-b');
+    } else {
+      navbar.classList.remove('bg-background/85', 'backdrop-blur-md', 'border-b');
+    }
+  });
+
+  // Mobile menu toggle
+  let isOpen = false;
+  hamburger.addEventListener('click', () => {
+    isOpen = !isOpen;
+    menu.style.transform = isOpen ? 'translateX(0)' : 'translateX(100%)';
+  });
+</script>
+```
+
+### Key Implementation Details
+
+<Tabs>
+  <Tab title="Scroll Effect">
+    JavaScript listens for scroll events and toggles glassmorphism classes:
+
+    ```js
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 20) {
+        navbar.classList.add('bg-background/85', 'backdrop-blur-md', 'border-b');
+      }
+    });
+    ```
+  </Tab>
+  <Tab title="Animated Underline">
+    CSS custom style using `@apply` directive:
+
+    ```css
+    .nav-underline {
+      @apply absolute -bottom-1 left-0 w-0 h-px bg-foreground/40;
+    }
+    .nav-link:hover .nav-underline {
+      @apply w-full;
+    }
+    ```
+  </Tab>
+  <Tab title="Mobile Menu">
+    Hamburger transforms into X icon with translateY + rotate:
+
+    ```js
+    bars[0].style.transform = 'translateY(7px) rotate(45deg)';
+    bars[1].style.opacity = '0';
+    bars[2].style.transform = 'translateY(-7px) rotate(-45deg)';
+    ```
+  </Tab>
+</Tabs>
+
+---
+
+## Hero
+
+**Location:** `src/components/Hero.astro`
+
+Landing section with full-screen height, animated text, and a decorative code block.
+
+### Features
+
+- Full viewport height (`min-h-svh`)
+- Two-column layout (text + code decoration)
+- Staggered fade-up animations
+- Purple gradient background glow
+- CTA buttons styled as anchor tags
+
+### Code Example
+
+```astro title="src/components/Hero.astro" {13-15,17-19,27-31}
+<section id="hero" class="relative min-h-svh flex items-center overflow-hidden pt-16">
+  <!-- Background glow -->
+  <div class="pointer-events-none absolute inset-0 z-0">
+    <div class="absolute -top-1/5 -right-1/10 w-150 h-150 rounded-full bg-primary/[0.07] blur-[80px]"></div>
+  </div>
+
+  <div class="container relative z-10 max-w-275 mx-auto px-6 py-20 grid grid-cols-1 md:grid-cols-2 gap-16">
+    <div>
+      <p class="text-base text-muted-foreground mb-4 animate-[fade-up_0.6s_ease_both]">
+        Hi, I'm <span class="text-foreground font-semibold">Juan Valencia</span>
+      </p>
+
+      <h1 class="text-[clamp(52px,8vw,80px)] font-extrabold animate-[fade-up_0.6s_0.1s_ease_both]">
+        Tech<br />& Systems Engineer
+      </h1>
+
+      <p class="text-[17px] text-muted-foreground animate-[fade-up_0.6s_0.2s_ease_both]">
+        I write code and I run operations — two separate crafts, one way of thinking.
+      </p>
+
+      <div class="flex flex-wrap gap-4 animate-[fade-up_0.6s_0.3s_ease_both]">
+        <a href="#projects" class="inline-flex items-center justify-center gap-2 
+          rounded-md text-sm font-semibold h-10 px-6 
+          bg-primary text-primary-foreground hover:bg-primary/90">
+          View Projects
+        </a>
+        <a href="#contact" class="inline-flex items-center justify-center gap-2
+          rounded-md text-sm font-semibold h-10 px-6
+          border border-border bg-transparent hover:border-primary">
+          Contact Me
+        </a>
+      </div>
+    </div>
+
+    <!-- Code decoration (hidden on mobile) -->
+    <div class="hidden md:block animate-[fade-up_0.6s_0.4s_ease_both]">
+      <div class="relative rounded-lg border border-border bg-card p-7 font-mono">
+        <span class="text-zinc-500">const </span>
+        <span class="text-zinc-300">dev</span>
+        <span> = &#123;</span>
+        <br />
+        <span class="pl-6 block">
+          <span class="text-zinc-400">name</span>: <span class="text-zinc-200">"drakk3"</span>,
+        </span>
+        <!-- ... -->
+      </div>
+    </div>
+  </div>
+</section>
+```
+
+<Note>
+The buttons are styled as `<a>` tags using shadcn Button classes directly, since Astro components can't use React components. This is why we copy the classes instead of importing `<Button>`.
+</Note>
+
+---
+
+## About
+
+**Location:** `src/components/About.astro`
+
+Personal introduction section with a Bateson blockquote and gradient accent line.
+
+### Code Example
+
+```astro title="src/components/About.astro" {6-7,23-29}
+<section id="about" class="py-24 border-t border-border">
+  <div class="container max-w-[1100px] mx-auto px-6">
+    <div class="relative rounded-xl border border-zinc-800 bg-card/60 px-10 py-14">
+      
+      <!-- Top accent line -->
+      <div class="absolute top-0 left-0 right-0 h-px 
+        bg-gradient-to-r from-foreground/20 via-foreground/8 to-transparent"></div>
+
+      <div class="relative z-10 max-w-[720px]">
+        <p class="text-xs font-semibold tracking-[3px] uppercase text-muted-foreground mb-4">
+          About
+        </p>
+        <h2 class="text-[clamp(28px,4vw,42px)] font-bold text-foreground mb-8">
+          Who I am
+        </h2>
+
+        <div class="space-y-5 text-base text-muted-foreground">
+          <p>
+            I'm <span class="text-foreground font-semibold">Juan Valencia</span>, 
+            a Systems Engineering student...
+          </p>
+
+          <blockquote class="relative my-10 pl-8 border-l-2 border-zinc-600">
+            <span class="absolute -top-6 -left-1 text-[88px] text-zinc-600/40 
+              font-serif select-none">"</span>
+            <p class="text-[clamp(20px,3vw,28px)] font-semibold text-foreground">
+              Information is a difference that makes a difference.
+            </p>
+            <footer class="mt-3 text-sm">— Gregory Bateson</footer>
+          </blockquote>
+
+          <p>Not all data matters. Not all processes scale...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+```
+
+---
+
+## Skills
+
+**Location:** `src/components/Skills.astro`
+
+Displays skills in an infinite marquee animation, followed by a two-column grid of technical and operational services.
+
+### Features
+
+- Imports data from `@/data/skills`
+- Infinite horizontal scrolling marquee (CSS animation)
+- Hover to pause marquee
+- Two-column responsive grid for services
+
+### Code Example
+
+```astro title="src/components/Skills.astro" {2,12-18}
+---
+import { skills, technicalServices, operationalServices } from '@/data/skills';
+---
+
+<section id="skills" class="py-24">
+  <!-- Infinite marquee -->
+  <div
+    class="overflow-hidden mb-18"
+    style="mask-image:linear-gradient(to right,transparent,black 10%,black 90%,transparent)"
+  >
+    <div class="flex w-max gap-4 animate-marquee hover:[animation-play-state:paused] py-2">
+      {[...skills, ...skills].map((skill) => (
+        <div class="flex items-center gap-2.5 bg-card border rounded-full py-2 pl-2 pr-5">
+          <span class="w-8 h-8 rounded-full border flex items-center justify-center"
+            style={`color:${skill.color};background:${skill.bg}`}>
+            {skill.letter}
+          </span>
+          <span class="text-[13px] font-medium">{skill.name}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- Services grid -->
+  <div class="container max-w-275 mx-auto px-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div>
+        <p class="text-xs font-semibold uppercase text-muted-foreground mb-5">Technical</p>
+        {technicalServices.map((service) => (
+          <div class="rounded-lg border bg-card p-6">
+            <h3 class="font-bold">{service.title}</h3>
+            <ul>
+              {service.items.map((item) => <li>{item}</li>)}
+            </ul>
+          </div>
+        ))}
+      </div>
+      <!-- Operational column... -->
+    </div>
+  </div>
+</section>
+```
+
+<Warning>
+The marquee animation is defined in `global.css`. The trick is to duplicate the skills array (`[...skills, ...skills]`) to create a seamless infinite loop.
+</Warning>
+
+---
+
+## Projects
+
+**Location:** `src/components/Projects.astro`
+
+Filterable project grid with category tabs and animated transitions.
+
+### Features
+
+- Imports project data from `@/data/projects`
+- Three filter buttons: All, Tech, Operations
+- Fade-in/out animation on filter change
+- Each card links to external project URL
+
+### Code Example
+
+```astro title="src/components/Projects.astro" {2,14-20,33-64}
+---
+import { projects } from '@/data/projects';
+---
+
+<section id="projects" class="py-24">
+  <div class="container max-w-275 mx-auto px-6">
+    <h2 class="text-[clamp(28px,4vw,42px)] font-bold mb-3">Projects</h2>
+    <p class="text-base text-muted-foreground mb-10">
+      A selection of work — software I've shipped and operations I've transformed.
+    </p>
+
+    <!-- Category filter -->
+    <div class="flex gap-2 mb-10" id="project-filters">
+      {(['All', 'Tech', 'Operations'] as const).map((label) => (
+        <button data-filter={label} class:list={[
+          'filter-btn h-9 px-5 rounded-md text-sm font-semibold border',
+          label === 'All'
+            ? 'border-zinc-500 bg-zinc-800 text-foreground'
+            : 'border-zinc-800 bg-transparent text-muted-foreground'
+        ]}>
+          {label}
+        </button>
+      ))}
+    </div>
+
+    <!-- Project grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6" id="projects-grid">
+      {projects.map((project) => (
+        <a href={project.url} target="_blank" data-category={project.category}
+          class="project-card group flex flex-col rounded-lg border bg-card">
+          
+          <!-- Gradient header -->
+          <div class="h-40 flex items-center justify-center"
+            style={`background:${project.gradient}`}>
+            <div class="w-16 h-16 rounded-2xl bg-white/5 border border-white/8">
+              {project.category === 'Tech' ? (
+                <svg width="28" height="28"><!-- code icon --></svg>
+              ) : (
+                <svg width="28" height="28"><!-- org chart icon --></svg>
+              )}
+            </div>
+          </div>
+
+          <!-- Card body -->
+          <div class="flex flex-col gap-3 p-6">
+            <div class="flex items-start justify-between">
+              <h3 class="text-[16px] font-bold">{project.name}</h3>
+              <span class="text-xs font-semibold">{project.status}</span>
+            </div>
+            <p class="text-[13.5px] text-muted-foreground">{project.description}</p>
+            
+            <!-- Tags -->
+            <div class="flex flex-wrap gap-1.5">
+              {project.tags.map(tag => (
+                <span class="text-[11px] text-zinc-500 bg-zinc-900 border px-2.5 py-0.5">
+                  {tag}
+                </span>
+              ))}
+            </div>
+
+            <span class="mt-auto text-[13px] group-hover:text-foreground">
+              View project →
+            </span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  const filterBtns = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+  const cards = document.querySelectorAll<HTMLElement>('.project-card');
+
+  filterBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const filter = btn.dataset.filter!;
+
+      // Fade all cards out
+      cards.forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.96)';
+      });
+
+      // After fade-out, toggle visibility
+      setTimeout(() => {
+        cards.forEach(card => {
+          const match = filter === 'All' || card.dataset.category === filter;
+          card.style.display = match ? '' : 'none';
+        });
+
+        // Fade matching cards back in
+        requestAnimationFrame(() => {
+          cards.forEach(card => {
+            if (card.style.display !== 'none') {
+              card.style.opacity = '1';
+              card.style.transform = '';
+            }
+          });
+        });
+      }, 180);
+    });
+  });
+</script>
+```
+
+---
+
+## Footer
+
+**Location:** `src/components/Footer.astro`
+
+Site footer with tech stack credits and copyright.
+
+### Code Example
+
+```astro title="src/components/Footer.astro" {2,44}
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-border py-8">
+  <div class="container max-w-275 mx-auto px-6 flex flex-wrap items-center justify-between">
+    
+    <div class="flex flex-wrap items-center gap-2.5 text-xs text-muted-foreground">
+      <span class="flex items-center gap-1.5">
+        <svg width="12" height="12"><!-- globe icon --></svg>
+        Built with
+        <a href="https://astro.build" target="_blank" class="hover:text-foreground">
+          Astro
+        </a>
+      </span>
+
+      <span class="text-border">·</span>
+
+      <span class="flex items-center gap-1.5">
+        <svg width="12" height="12"><!-- layout icon --></svg>
+        Styled with
+        <a href="https://tailwindcss.com" target="_blank">Tailwind</a>
+        +
+        <a href="https://ui.shadcn.com" target="_blank">shadcn/ui</a>
+      </span>
+
+      <span class="text-border">·</span>
+
+      <span class="flex items-center gap-1.5">
+        <svg width="12" height="12"><!-- shield icon --></svg>
+        Deployed on
+        <a href="https://vercel.com" target="_blank">Vercel</a>
+      </span>
+    </div>
+
+    <p class="text-xs text-muted-foreground">
+      © {year}
+      <a href="https://github.com/drakk3" target="_blank">
+        drakk3
+      </a>
+    </p>
+  </div>
+</footer>
+```
+
+<Note>
+The `year` variable is computed in the frontmatter, so the copyright year updates automatically.
+</Note>
+
+---
+
+## Welcome
+
+**Location:** `src/components/Welcome.astro`
+
+This is the default Astro starter component (not used in production). It displays the Astro logo and welcome message.
+
+<Warning>
+This component is **not imported** in `index.astro` and exists only as a reference from the Astro starter template.
+</Warning>
+
+---
+
+## Related Pages
+
+<CardGroup cols={2}>
+  <Card title="React Components" icon="react" href="./react-components">
+    Learn about the Contact form and React integration
+  </Card>
+  <Card title="shadcn/ui Primitives" icon="layer-group" href="./shadcn-ui">
+    Explore reusable UI components like Button, Input, Card
+  </Card>
+</CardGroup>

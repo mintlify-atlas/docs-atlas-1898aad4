@@ -1,0 +1,228 @@
+---
+title: Components Overview
+description: Understanding the component architecture of the Drakk3 Portfolio
+---
+
+The Drakk3 Portfolio uses a hybrid component architecture that combines **Astro components** (`.astro`) for static content with **React components** (`.tsx`) for interactive features, all styled with **shadcn/ui** primitives and **Tailwind CSS v4**.
+
+## Component Directory Structure
+
+All components live in the `src/components/` directory:
+
+```plaintext
+src/components/
+├── Navbar.astro          # Navigation header with mobile menu
+├── Hero.astro            # Landing section with code decoration
+├── About.astro           # About section with blockquote
+├── Skills.astro          # Skills marquee + services grid
+├── Projects.astro        # Filterable project cards
+├── Footer.astro          # Site footer with tech stack links
+├── Welcome.astro         # Default Astro welcome component
+├── Contact.tsx           # React form component (interactive)
+└── ui/                   # shadcn/ui primitives
+    ├── badge.tsx
+    ├── button.tsx
+    ├── card.tsx
+    ├── input.tsx
+    ├── label.tsx
+    └── textarea.tsx
+```
+
+## Component Categories
+
+<CardGroup cols={3}>
+  <Card title="Astro Components" icon="puzzle">
+    Static, server-rendered sections (Navbar, Hero, About, Skills, Projects, Footer)
+  </Card>
+  <Card title="React Components" icon="react">
+    Interactive features requiring client-side state (Contact form)
+  </Card>
+  <Card title="shadcn/ui" icon="layer-group">
+    Reusable UI primitives (Button, Input, Card, Badge, etc.)
+  </Card>
+</CardGroup>
+
+## Layout Component
+
+The site uses a shared layout wrapper (`src/layouts/Layout.astro`) that provides the HTML structure and meta tags:
+
+```astro title="src/layouts/Layout.astro"
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+}
+const { title = 'drakk3 — Software Developer' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content="Software Developer portfolio" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
+```
+
+**Key features:**
+- Accepts optional `title` prop (defaults to site name)
+- Imports global CSS (including Tailwind v4 config)
+- Uses `<slot />` for content injection
+
+## Component Composition Pattern
+
+All components are composed together in `src/pages/index.astro` using a single-page architecture:
+
+```astro title="src/pages/index.astro" {8,19}
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Hero from '../components/Hero.astro';
+import About from '../components/About.astro';
+import Skills from '../components/Skills.astro';
+import Projects from '../components/Projects.astro';
+import Contact from '../components/Contact';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout>
+  <Navbar />
+  <main>
+    <Hero />
+    <About />
+    <Skills />
+    <Projects />
+    <Contact client:load />
+  </main>
+  <Footer />
+</Layout>
+```
+
+<Note>
+Notice that `Contact` is imported **without the `.tsx` extension** and uses the `client:load` directive to hydrate it on the client. This is the pattern for React components in Astro.
+</Note>
+
+## Import Paths and @ Alias
+
+The project uses the `@` path alias to reference the `src/` directory:
+
+```astro
+// Instead of relative paths:
+import { skills } from '../../data/skills';
+
+// Use the @ alias:
+import { skills } from '@/data/skills';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+```
+
+**Configured in `astro.config.mjs`:**
+
+```js
+export default defineConfig({
+  vite: {
+    resolve: {
+      alias: {
+        '@': path.resolve('./src')
+      }
+    }
+  }
+});
+```
+
+## When to Use Each Component Type
+
+<Tabs>
+  <Tab title="Astro Components">
+    **Use Astro components when:**
+    - Content is static or server-rendered
+    - No client-side interactivity needed
+    - You want zero JavaScript in the browser
+    - Examples: marketing pages, blog posts, headers, footers
+
+    ```astro
+    ---
+    // Runs only on the server
+    const data = await fetch('...');
+    ---
+    <section>{data.title}</section>
+    ```
+  </Tab>
+  
+  <Tab title="React Components">
+    **Use React components when:**
+    - You need client-side state management
+    - User interactions require JavaScript
+    - Forms with validation and submission
+    - Real-time updates or animations
+
+    ```tsx
+    import { useState } from 'react';
+
+    export default function Form() {
+      const [value, setValue] = useState('');
+      return <input value={value} onChange={e => setValue(e.target.value)} />;
+    }
+    ```
+
+    Mount with `client:load` directive in Astro:
+    ```astro
+    <Form client:load />
+    ```
+  </Tab>
+  
+  <Tab title="shadcn/ui">
+    **Use shadcn/ui components for:**
+    - Reusable UI primitives (buttons, inputs, cards)
+    - Consistent styling across React components
+    - Accessible, production-ready components
+
+    ```tsx
+    import { Button } from '@/components/ui/button';
+
+    <Button variant="outline" size="lg">
+      Click me
+    </Button>
+    ```
+  </Tab>
+</Tabs>
+
+## Styling Approach
+
+All components use **Tailwind CSS v4** utility classes:
+
+- Theme tokens defined in `src/styles/global.css` under `@theme { }`
+- Dark-only design (no light mode)
+- Primary accent: purple (`hsl(271 76% 61%)`)
+- shadcn components use `cn()` helper for class composition
+
+```tsx
+import { cn } from '@/lib/utils';
+
+<div className={cn(
+  'base-classes',
+  conditionalClass && 'conditional-classes'
+)} />
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Astro Components" icon="puzzle" href="./astro-components">
+    Explore all Astro components with real code examples
+  </Card>
+  <Card title="React Components" icon="react" href="./react-components">
+    Learn about the Contact form and React integration
+  </Card>
+  <Card title="shadcn/ui Primitives" icon="layer-group" href="./shadcn-ui">
+    Reference for all UI components and utilities
+  </Card>
+</CardGroup>

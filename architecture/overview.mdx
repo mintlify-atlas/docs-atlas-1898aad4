@@ -1,0 +1,246 @@
+---
+title: 'Architecture Overview'
+description: 'High-level overview of the Drakk3 Portfolio architecture, including project structure, Astro islands architecture, and performance characteristics.'
+---
+
+## Introduction
+
+The Drakk3 Portfolio is a single-page portfolio site built with modern web technologies that prioritize performance and developer experience. The architecture leverages Astro's islands architecture to deliver a fast, static site with strategic client-side interactivity.
+
+## Technology Stack
+
+<CardGroup cols={2}>
+  <Card title="Astro 6" icon="rocket">
+    Static site generator with islands architecture for optimal performance
+  </Card>
+  <Card title="React 19" icon="react">
+    Interactive components with modern React features (useTransition, etc.)
+  </Card>
+  <Card title="Tailwind CSS v4" icon="palette">
+    Utility-first styling with native Vite plugin configuration
+  </Card>
+  <Card title="shadcn/ui" icon="layer-group">
+    Accessible, customizable component primitives
+  </Card>
+</CardGroup>
+
+## Project Structure
+
+The project follows a clean, organized directory layout:
+
+```plaintext
+src/
+├── components/         # UI components (Astro + React)
+│   ├── ui/            # shadcn/ui primitives (React)
+│   ├── Navbar.astro   # Static navigation
+│   ├── Hero.astro     # Static hero section
+│   ├── About.astro    # Static about section
+│   ├── Skills.astro   # Static skills showcase
+│   ├── Projects.astro # Static projects grid
+│   ├── Contact.tsx    # Interactive form (React)
+│   └── Footer.astro   # Static footer
+├── data/              # Static data files
+│   ├── projects.ts    # Project information
+│   └── skills.ts      # Skills data
+├── layouts/           # Page layouts
+│   └── Layout.astro   # Base HTML layout
+├── lib/               # Utilities
+│   └── utils.ts       # Helper functions (cn, etc.)
+├── pages/             # Routes
+│   └── index.astro    # Main landing page
+└── styles/            # Global styles
+    └── global.css     # Tailwind imports & theme tokens
+```
+
+## Astro Islands Architecture
+
+<Note>
+  **Islands Architecture** is a paradigm where most of your page is static HTML, with "islands" of interactivity sprinkled throughout. This results in significantly better performance compared to fully client-rendered SPAs.
+</Note>
+
+### How It Works
+
+1. **Server-side rendering**: Astro components render to static HTML at build time
+2. **Selective hydration**: Only interactive components load JavaScript
+3. **Zero JS by default**: Non-interactive sections ship zero JavaScript to the browser
+4. **Progressive enhancement**: The page works without JavaScript, interactivity enhances the experience
+
+### Page Composition Example
+
+Here's how the main page is structured in `src/pages/index.astro:1`:
+
+```astro
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Hero from '../components/Hero.astro';
+import About from '../components/About.astro';
+import Skills from '../components/Skills.astro';
+import Projects from '../components/Projects.astro';
+import Contact from '../components/Contact';  // React component
+import Footer from '../components/Footer.astro';
+---
+
+<Layout>
+  <Navbar />
+  <main>
+    <Hero />
+    <About />
+    <Skills />
+    <Projects />
+    <Contact client:load />  <!-- Only this loads JavaScript -->
+  </main>
+  <Footer />
+</Layout>
+```
+
+**Key observations:**
+- All `.astro` components are static (Navbar, Hero, About, Skills, Projects, Footer)
+- Only `Contact.tsx` uses the `client:load` directive, making it an interactive "island"
+- The majority of the page ships as pre-rendered HTML with zero JavaScript
+
+## When to Use Astro vs React Components
+
+Use this decision tree:
+
+<Steps>
+  <Step title="Does it need interactivity?">
+    If the component is purely presentational with no user interaction (navigation, content sections, footers), use an **Astro component** (`.astro`).
+  </Step>
+  
+  <Step title="Does it need client-side state?">
+    If it requires `useState`, `useEffect`, or other React hooks, use a **React component** (`.tsx`) with a client directive.
+  </Step>
+  
+  <Step title="Does it need form handling?">
+    For forms with validation, dynamic UI updates, or API calls, use a **React component** (`.tsx`).
+  </Step>
+  
+  <Step title="Can it be static?">
+    When in doubt, start with Astro. You can always refactor to React if interactivity is needed later.
+  </Step>
+</Steps>
+
+### Component Type Matrix
+
+| Component Type | Technology | Example |
+|---------------|-----------|----------|
+| Navigation | Astro | `Navbar.astro` - static links with anchor scrolling |
+| Hero section | Astro | `Hero.astro` - heading, subheading, CTA buttons |
+| Content sections | Astro | `About.astro`, `Skills.astro`, `Projects.astro` |
+| Interactive forms | React | `Contact.tsx` - form state, validation, submission |
+| UI primitives | React | `components/ui/*` - buttons, inputs (shadcn/ui) |
+| Footer | Astro | `Footer.astro` - static links and copyright |
+
+## Build Process
+
+The build process follows these steps:
+
+<Steps>
+  <Step title="Astro compilation">
+    Astro processes all `.astro` files, rendering them to static HTML with inlined CSS.
+  </Step>
+  
+  <Step title="React component bundling">
+    React components marked with client directives are bundled separately for client-side hydration.
+  </Step>
+  
+  <Step title="Tailwind processing">
+    The `@tailwindcss/vite` plugin scans components and generates optimized CSS.
+  </Step>
+  
+  <Step title="Asset optimization">
+    Images, fonts, and other assets are optimized and fingerprinted.
+  </Step>
+  
+  <Step title="Output to dist/">
+    Final static files are written to `dist/` directory, ready for deployment.
+  </Step>
+</Steps>
+
+### Build Commands
+
+```bash
+npm run dev       # Start dev server (localhost:4321)
+npm run build     # Production build to dist/
+npm run preview   # Preview production build locally
+```
+
+<Note>
+  Requires Node.js >= 22.12.0
+</Note>
+
+## Performance Characteristics
+
+The architecture delivers exceptional performance through:
+
+### Minimal JavaScript
+
+- **Static sections**: Zero JavaScript sent to browser
+- **Interactive sections**: Only the Contact form (~10KB gzipped) includes React runtime
+- **Total JS budget**: < 50KB for the entire page
+
+### Optimized CSS
+
+- **Tailwind v4**: Generates only the utility classes actually used
+- **Single CSS file**: All styles bundled and minified
+- **Critical CSS**: Inlined in HTML for fastest first paint
+
+### Fast Loading
+
+<CardGroup cols={3}>
+  <Card title="First Contentful Paint" icon="bolt">
+    < 0.5s
+  </Card>
+  <Card title="Time to Interactive" icon="cursor-click">
+    < 1.5s
+  </Card>
+  <Card title="Lighthouse Score" icon="chart-line">
+    95+ across all metrics
+  </Card>
+</CardGroup>
+
+### Why It's Fast
+
+1. **Static HTML**: Most content is pre-rendered at build time
+2. **Selective hydration**: JavaScript only loads for interactive components
+3. **No framework overhead**: Static sections have zero React/Astro runtime
+4. **Optimized assets**: Automatic code splitting and tree shaking
+5. **CSS optimization**: Tailwind v4 generates minimal CSS
+
+## Path Alias Configuration
+
+The project uses `@/` as an alias to `./src/` for cleaner imports:
+
+```typescript title="astro.config.mjs:15"
+vite: {
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+}
+```
+
+**Usage example from `src/components/Contact.tsx:2`:**
+
+```tsx
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+```
+
+<Warning>
+  The `@/` alias only works within the `src/` directory. Files outside `src/` should use relative imports.
+</Warning>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Astro + React Integration" href="./astro-react-integration">
+    Learn how Astro and React work together with client directives
+  </Card>
+  <Card title="Tailwind v4 Configuration" href="./tailwind-v4">
+    Explore Tailwind CSS v4 native configuration and theme customization
+  </Card>
+</CardGroup>

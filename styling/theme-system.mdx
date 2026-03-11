@@ -1,0 +1,293 @@
+---
+title: Theme System
+description: Understanding Tailwind v4's theme system and shadcn compatibility layer
+---
+
+Drakk3 Portfolio uses **Tailwind CSS v4** with a custom theme system that bridges compatibility with shadcn/ui components. This guide explains how the dual-layer theme configuration works.
+
+## Architecture Overview
+
+The theme system uses two layers:
+
+1. **`@theme` directive** - Tailwind v4's native configuration in `src/styles/global.css`
+2. **`:root` variables** - HSL value bridge for shadcn/ui compatibility
+
+<Note>
+  Tailwind v4 is configured via the Vite plugin (`@tailwindcss/vite`), not PostCSS. The `tailwind.config.mjs` exists alongside for shadcn/ui compatibility, but `@theme` in `global.css` is the source of truth.
+</Note>
+
+## The @theme Directive
+
+Tailwind v4 introduces the `@theme` directive for defining design tokens directly in CSS. All color, spacing, and animation tokens are defined here.
+
+### Color Tokens
+
+Colors use the `--color-*` prefix and include full HSL values:
+
+```css title="src/styles/global.css"
+@theme {
+  /* Colors */
+  --color-background:          hsl(240 5% 4%);
+  --color-foreground:          hsl(0 0% 94%);
+  --color-card:                hsl(240 4% 10%);
+  --color-card-foreground:     hsl(0 0% 94%);
+  --color-primary:             hsl(0 0% 100%);
+  --color-primary-foreground:  hsl(0 0% 0%);
+  --color-secondary:           hsl(240 4% 16%);
+  --color-secondary-foreground:hsl(0 0% 94%);
+  --color-muted:               hsl(240 4% 16%);
+  --color-muted-foreground:    hsl(240 5% 65%);
+  --color-accent:              hsl(240 4% 16%);
+  --color-accent-foreground:   hsl(0 0% 94%);
+  --color-destructive:         hsl(0 72% 51%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+  --color-border:              hsl(240 4% 16%);
+  --color-input:               hsl(240 4% 16%);
+  --color-ring:                hsl(0 0% 100%);
+
+  /* Border radius */
+  --radius-sm:  calc(0.5rem - 4px);
+  --radius-md:  calc(0.5rem - 2px);
+  --radius-lg:  0.5rem;
+
+  /* Animations */
+  --animate-marquee: marquee 30s linear infinite;
+  --animate-fade-up: fade-up 0.5s ease both;
+  --animate-spin:    spin 0.7s linear infinite;
+}
+```
+
+### Usage in Tailwind Classes
+
+These tokens are automatically available as Tailwind utilities:
+
+```tsx
+// Backgrounds
+<div className="bg-background" />
+<div className="bg-card" />
+<div className="bg-primary" />
+
+// Text colors
+<p className="text-foreground" />
+<p className="text-muted-foreground" />
+
+// Borders
+<div className="border-border" />
+<div className="ring-ring" />
+```
+
+## The shadcn HSL Bridge
+
+shadcn/ui components expect HSL values **without** the `hsl()` wrapper. The `:root` layer provides this compatibility:
+
+```css title="src/styles/global.css"
+:root {
+  --background:           240 5% 4%;
+  --foreground:           0 0% 94%;
+  --card:                 240 4% 10%;
+  --card-foreground:      0 0% 94%;
+  --primary:              0 0% 100%;
+  --primary-foreground:   0 0% 0%;
+  --secondary:            240 4% 16%;
+  --secondary-foreground: 0 0% 94%;
+  --muted:                240 4% 16%;
+  --muted-foreground:     240 5% 65%;
+  --accent:               240 4% 16%;
+  --accent-foreground:    0 0% 94%;
+  --destructive:          0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+  --border:               240 4% 16%;
+  --input:                240 4% 16%;
+  --ring:                 0 0% 100%;
+  --radius:               0.5rem;
+}
+```
+
+### Why Two Layers?
+
+<CardGroup cols={2}>
+  <Card title="@theme (Tailwind v4)" icon="paintbrush">
+    - Native Tailwind v4 tokens
+    - Uses `--color-*` prefix
+    - Includes full `hsl()` wrapper
+    - Used by Tailwind utilities
+  </Card>
+  <Card title=":root (shadcn)" icon="puzzle">
+    - Compatibility with shadcn/ui
+    - No prefix, just `--name`
+    - HSL values only (no wrapper)
+    - Used by `hsl(var(--name))` syntax
+  </Card>
+</CardGroup>
+
+### shadcn Component Usage
+
+shadcn components reference colors using `hsl(var(--name))`:
+
+```tsx title="src/components/ui/card.tsx"
+const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn(
+        'rounded-lg border border-border bg-card text-card-foreground',
+        className
+      )}
+      {...props}
+    />
+  )
+);
+```
+
+The `tailwind.config.mjs` extends these variables:
+
+```js title="tailwind.config.mjs"
+theme: {
+  extend: {
+    colors: {
+      background: 'hsl(var(--background))',
+      foreground: 'hsl(var(--foreground))',
+      card: {
+        DEFAULT: 'hsl(var(--card))',
+        foreground: 'hsl(var(--card-foreground))',
+      },
+      // ... more colors
+    },
+  },
+},
+```
+
+## Dark-Only Design
+
+This portfolio uses a **dark-only design** with no light mode toggle. All colors are optimized for dark backgrounds.
+
+<Warning>
+  There is no light mode color scheme. The `darkMode: 'class'` in `tailwind.config.mjs` exists for shadcn compatibility, but the theme is intentionally dark-only.
+</Warning>
+
+### Color Philosophy
+
+- **Background**: Near-black (`hsl(240 5% 4%)`)
+- **Foreground**: Off-white (`hsl(0 0% 94%)`)
+- **Primary**: Pure white (`hsl(0 0% 100%)`)
+- **Muted**: Zinc-based grays for subtle elements
+- **Accent**: Minimal, matching secondary for consistency
+
+## Customizing the Theme
+
+### Changing Colors
+
+To change colors, update **both layers** in `src/styles/global.css`:
+
+<Steps>
+  <Step title="Update @theme">
+    Modify the `--color-*` variables with full `hsl()` values:
+    
+    ```css
+    @theme {
+      --color-primary: hsl(271 76% 61%); /* purple */
+    }
+    ```
+  </Step>
+  
+  <Step title="Update :root">
+    Update the corresponding `:root` variable with HSL values only:
+    
+    ```css
+    :root {
+      --primary: 271 76% 61%; /* purple, no hsl() */
+    }
+    ```
+  </Step>
+  
+  <Step title="Test in browser">
+    Changes apply immediately in dev mode. Check both Tailwind utilities and shadcn components.
+  </Step>
+</Steps>
+
+### Adding New Colors
+
+Follow the same pattern for custom colors:
+
+```css title="src/styles/global.css"
+@theme {
+  --color-success: hsl(142 76% 36%);
+  --color-warning: hsl(38 92% 50%);
+}
+
+:root {
+  --success: 142 76% 36%;
+  --warning: 38 92% 50%;
+}
+```
+
+Then extend `tailwind.config.mjs`:
+
+```js title="tailwind.config.mjs"
+theme: {
+  extend: {
+    colors: {
+      success: 'hsl(var(--success))',
+      warning: 'hsl(var(--warning))',
+    },
+  },
+},
+```
+
+## Border Radius System
+
+Border radius tokens are defined in `@theme`:
+
+```css
+@theme {
+  --radius-sm:  calc(0.5rem - 4px);  /* 4px */
+  --radius-md:  calc(0.5rem - 2px);  /* 6px */
+  --radius-lg:  0.5rem;              /* 8px */
+}
+```
+
+The `:root` layer provides a single value for shadcn:
+
+```css
+:root {
+  --radius: 0.5rem;
+}
+```
+
+Usage in `tailwind.config.mjs`:
+
+```js
+borderRadius: {
+  lg: 'var(--radius)',
+  md: 'calc(var(--radius) - 2px)',
+  sm: 'calc(var(--radius) - 4px)',
+},
+```
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Use Tailwind utilities" icon="check">
+    Prefer `bg-background` over custom CSS when possible
+  </Card>
+  <Card title="Keep layers in sync" icon="arrows-rotate">
+    Always update both `@theme` and `:root` when changing colors
+  </Card>
+  <Card title="Test shadcn components" icon="vial">
+    Verify changes work with both custom and shadcn components
+  </Card>
+  <Card title="Use semantic names" icon="tag">
+    Follow the naming pattern: `background`, `foreground`, `primary`, etc.
+  </Card>
+</CardGroup>
+
+## Related Resources
+
+<CardGroup cols={2}>
+  <Card title="Color Tokens" href="/styling/color-tokens" icon="palette">
+    Complete reference of all color tokens and their HSL values
+  </Card>
+  <Card title="Animations" href="/styling/animations" icon="circle-play">
+    Animation system and keyframe definitions
+  </Card>
+</CardGroup>

@@ -1,0 +1,170 @@
+---
+title: Development Environment Setup
+description: Set up your local development environment for the Drakk3 Portfolio project
+---
+
+<Steps>
+  <Step title="Check Prerequisites">
+    Before you begin, ensure you have the following installed:
+
+    - **Node.js >= 22.12.0** (required version specified in package.json)
+    - **npm** (comes with Node.js)
+    - **Git** for version control
+    
+    <Note>
+      Check your Node.js version with `node --version`. If you need to upgrade, visit [nodejs.org](https://nodejs.org/) or use a version manager like [nvm](https://github.com/nvm-sh/nvm).
+    </Note>
+
+    ```bash
+    # Verify Node.js version
+    node --version
+    # Should output v22.12.0 or higher
+    ```
+  </Step>
+
+  <Step title="Clone the Repository">
+    Clone the project repository to your local machine:
+
+    ```bash
+    git clone <repository-url>
+    cd drakk3-portfolio
+    ```
+  </Step>
+
+  <Step title="Install Dependencies">
+    Install all required packages using npm:
+
+    ```bash
+    npm install
+    ```
+
+    This will install:
+    - **Astro 6** - The static site framework
+    - **React 19** - For interactive components
+    - **Tailwind CSS v4** - Styling framework
+    - **shadcn/ui** - UI component primitives
+    - **Lucide React** - Icon library
+
+    <Note>
+      The project uses Tailwind CSS v4 via the Vite plugin (`@tailwindcss/vite`), not PostCSS. This is configured automatically during installation.
+    </Note>
+  </Step>
+
+  <Step title="Start Development Server">
+    Launch the development server:
+
+    ```bash
+    npm run dev
+    ```
+
+    The site will be available at `http://localhost:4321`
+
+    <CardGroup cols={2}>
+      <Card title="Hot Module Replacement" icon="flame">
+        Changes to Astro components, React components, and styles are automatically reflected in the browser
+      </Card>
+      <Card title="Fast Refresh" icon="bolt">
+        React components support Fast Refresh for instant updates without losing component state
+      </Card>
+    </CardGroup>
+  </Step>
+
+  <Step title="VSCode Setup (Recommended)">
+    If you're using Visual Studio Code, the project includes pre-configured settings:
+
+    ### Recommended Extensions
+
+    The `.vscode/extensions.json` file recommends:
+    - **Astro** (`astro-build.astro-vscode`) - Syntax highlighting, IntelliSense, and diagnostics for Astro files
+
+    VSCode will prompt you to install recommended extensions when you open the project.
+
+    ### Launch Configuration
+
+    A debug configuration is included in `.vscode/launch.json`:
+
+    ```json
+    {
+      "command": "./node_modules/.bin/astro dev",
+      "name": "Development server",
+      "request": "launch",
+      "type": "node-terminal"
+    }
+    ```
+
+    You can start the dev server from the Run and Debug panel (F5).
+
+    ### Additional Recommended Extensions
+
+    While not required, these extensions enhance the development experience:
+    - **Tailwind CSS IntelliSense** - Autocomplete for Tailwind classes
+    - **ESLint** - Code quality and consistency
+    - **Prettier** - Code formatting
+    - **GitLens** - Enhanced Git integration
+  </Step>
+
+  <Step title="Verify Setup">
+    Confirm everything is working:
+
+    1. Navigate to `http://localhost:4321`
+    2. You should see the portfolio homepage with:
+       - Navigation bar
+       - Hero section
+       - Skills section
+       - Projects grid
+       - Contact form
+       - Footer
+
+    3. Try making a change to `src/pages/index.astro` and verify hot reload works
+
+    <Warning>
+      If the dev server fails to start, ensure no other process is using port 4321. You can change the port with `npm run dev -- --port 3000`
+    </Warning>
+  </Step>
+</Steps>
+
+## Project Structure Overview
+
+Once setup is complete, familiarize yourself with the project structure:
+
+```
+src/
+├── components/        # UI components
+│   ├── ui/           # shadcn/ui primitives (React)
+│   ├── *.astro       # Static Astro components
+│   └── Contact.tsx   # Interactive React component
+├── data/             # Content data files
+│   ├── projects.ts   # Project definitions
+│   └── skills.ts     # Skills and services
+├── layouts/          # Page layouts
+│   └── Layout.astro  # Main layout wrapper
+├── lib/              # Utility functions
+│   └── utils.ts      # cn() helper for classnames
+├── pages/            # Routes
+│   └── index.astro   # Homepage (single-page site)
+└── styles/           # Global styles
+    └── global.css    # Tailwind config & theme tokens
+```
+
+## Path Alias
+
+The project uses `@` as an alias for `./src`, configured in `astro.config.mjs`:
+
+```typescript
+// Instead of:
+import { skills } from '../../../data/skills'
+
+// You can write:
+import { skills } from '@/data/skills'
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Available Commands" icon="terminal" href="./commands">
+    Learn about all npm scripts and when to use them
+  </Card>
+  <Card title="Best Practices" icon="book" href="./best-practices">
+    Follow project conventions for components, styling, and data management
+  </Card>
+</CardGroup>

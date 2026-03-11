@@ -1,0 +1,130 @@
+---
+title: "Introduction"
+description: "A minimalist dark-themed portfolio site built with Astro 6, React 19, Tailwind CSS v4, and shadcn/ui"
+---
+
+## Overview
+
+Drakk3 Portfolio is a modern single-page portfolio application showcasing projects, skills, and professional experience. Built with cutting-edge web technologies, it demonstrates a clean architecture that balances static content with interactive React components.
+
+<CardGroup cols={2}>
+  <Card title="Get Started" icon="rocket" href="/quickstart">
+    Set up your development environment and run the portfolio locally
+  </Card>
+  <Card title="Architecture" icon="building" href="/architecture/overview">
+    Understand the Astro + React islands architecture
+  </Card>
+  <Card title="Components" icon="puzzle-piece" href="/components/overview">
+    Explore the component library and structure
+  </Card>
+  <Card title="Styling" icon="palette" href="/styling/theme-system">
+    Learn about the Tailwind v4 theme system
+  </Card>
+</CardGroup>
+
+## Key Features
+
+<AccordionGroup>
+  <Accordion title="Astro 6 with React 19 Islands">
+    Combines the performance of static-site generation with the interactivity of React where needed. Most components are Astro (.astro) for zero JavaScript, while interactive sections like the contact form use React islands with `client:load`.
+  </Accordion>
+  
+  <Accordion title="Tailwind CSS v4 Native Configuration">
+    Uses Tailwind v4's new `@theme` directive in CSS instead of traditional PostCSS configuration. Theme tokens are defined directly in `src/styles/global.css` using CSS custom properties.
+  </Accordion>
+  
+  <Accordion title="shadcn/ui Component Library">
+    Integrates shadcn/ui primitives for accessible, customizable UI components. Uses the `cn()` utility from `src/lib/utils.ts` to merge Tailwind classes cleanly.
+  </Accordion>
+  
+  <Accordion title="Dark-Only Minimalist Design">
+    Features a carefully crafted dark color scheme with zinc tones and white accents. All theme tokens are defined in both Tailwind v4 format and HSL variables for maximum compatibility.
+  </Accordion>
+  
+  <Accordion title="Type-Safe Data Structure">
+    Project and skills data are defined in TypeScript modules (`src/data/projects.ts` and `src/data/skills.ts`) with full type definitions for status, category, and other fields.
+  </Accordion>
+  
+  <Accordion title="Single-Page Portfolio Layout">
+    Organized as a single scrollable page with sections: Navbar → Hero → About → Skills → Projects → Contact → Footer. Each section is a separate component for maintainability.
+  </Accordion>
+</AccordionGroup>
+
+## Technology Stack
+
+<Tabs>
+  <Tab title="Core Framework">
+    - **Astro 6** - Static site generator with islands architecture
+    - **React 19** - Interactive UI components
+    - **TypeScript** - Type-safe development
+  </Tab>
+  
+  <Tab title="Styling">
+    - **Tailwind CSS v4** - Utility-first CSS with native @theme configuration
+    - **shadcn/ui** - Accessible component primitives
+    - **Radix UI** - Unstyled, accessible components (Label, Separator, Slot)
+  </Tab>
+  
+  <Tab title="Utilities">
+    - **class-variance-authority** - Component variant management
+    - **clsx + tailwind-merge** - Class name merging via `cn()` utility
+    - **lucide-react** - Icon library
+  </Tab>
+</Tabs>
+
+## Project Structure
+
+The portfolio follows a clean component-based architecture:
+
+```
+src/
+├── components/          # UI components
+│   ├── ui/             # shadcn/ui primitives (badge, button, card, input, label, textarea)
+│   ├── About.astro     # About section (static)
+│   ├── Contact.tsx     # Contact form (React, interactive)
+│   ├── Footer.astro    # Footer section (static)
+│   ├── Hero.astro      # Hero section (static)
+│   ├── Navbar.astro    # Navigation bar (static)
+│   ├── Projects.astro  # Project showcase (static)
+│   ├── Skills.astro    # Skills display (static)
+│   └── Welcome.astro   # Welcome component (static)
+├── data/               # Type-safe data definitions
+│   ├── projects.ts     # Project data with types
+│   └── skills.ts       # Skills and services data
+├── layouts/
+│   └── Layout.astro    # Main layout wrapper
+├── lib/
+│   └── utils.ts        # cn() utility for class merging
+├── pages/
+│   └── index.astro     # Single-page entry point
+└── styles/
+    └── global.css      # Tailwind v4 @theme config + global styles
+```
+
+## Design Philosophy
+
+<Note>
+This portfolio demonstrates a **content-first, performance-first** approach. By using Astro components for static sections and React only where interactivity is required, the site delivers minimal JavaScript to the browser while maintaining a rich user experience.
+</Note>
+
+The dark minimalist theme creates a professional, focused presentation that puts content front and center. Every design decision—from the zinc color palette to the smooth scroll behavior—supports readability and user engagement.
+
+## Next Steps
+
+<Steps>
+  <Step title="Quick Start">
+    Follow the [quickstart guide](/quickstart) to clone the repository and run the development server
+  </Step>
+  
+  <Step title="Explore Architecture">
+    Read the [architecture overview](/architecture/overview) to understand how Astro and React work together
+  </Step>
+  
+  <Step title="Customize Components">
+    Browse the [component documentation](/components/overview) to learn how to modify and extend components
+  </Step>
+  
+  <Step title="Adapt the Theme">
+    Study the [theme system](/styling/theme-system) to customize colors, typography, and animations
+  </Step>
+</Steps>
